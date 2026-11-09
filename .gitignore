@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+.venv/
+venv/
+.pytest_cache/
+
+# Segredos e ambiente
+.env
+.env.*
+!.env.example
+
+# Node
+node_modules/
+
+# Editor e sistema
+.vscode/
+.DS_Store
+Thumbs.db
+
+# Ferramentas locais
+.claude/
+CLAUDE.md
+
+# Documentos de planejamento (uso interno do grupo)
+Plano_*.docx
+
+# Vercel
+.vercel/
