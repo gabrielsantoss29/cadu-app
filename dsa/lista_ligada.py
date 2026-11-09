@@ -160,8 +160,8 @@ class HistoricoPerguntas:
             self._lista.remover_fim()
 
     def recentes(self):
-        """Devolve as perguntas da mais recente para a mais antiga (uma lista de leitura)."""
-        return [p for p in self._lista]
+        """Percorre as perguntas da mais recente para a mais antiga. O(n)."""
+        return iter(self._lista)
 
     def limpar(self):
         self._lista.limpar()
