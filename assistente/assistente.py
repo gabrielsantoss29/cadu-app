@@ -1,169 +1,294 @@
-"""Classe Assistente: recebe a mensagem, aplica as regras e responde."""
+"""Classe Assistente: quem conversa com a pessoa."""
 import csv
-from dataclasses import dataclass, asdict
+import json
+import time
 from datetime import datetime
-from pathlib import Path
 
-from .base_conhecimento import BaseConhecimento
-from .orientacao import Orientacao
-from .texto import palavras
+from base_conhecimento import BaseConhecimento, normalizar
 
-# Níveis de confiança da resposta.
-ALTA, MEDIA, SEM_RESPOSTA = "ALTA", "MEDIA", "SEM_RESPOSTA"
-FORA_ESCOPO, RECUSADA = "FORA_ESCOPO", "RECUSADA"
+LIMITE_ALTA = 6        # 6 pontos ou mais = confiança ALTA
+LIMITE_MEDIA = 3       # 3 a 5 pontos = MÉDIA; menos de 3 = não encontrei
+TAMANHO_MAXIMO = 300   # letras por pergunta
 
-LIMITE_ALTA = 6       # 6 pontos ou mais = ALTA
-LIMITE_MEDIA = 3      # de 3 a 5 = MÉDIA; abaixo disso = sem resposta
-TAMANHO_MAXIMO = 300  # caracteres por mensagem
+AVISO_DADOS = ("Atenção: não digite CPF, NIS, telefone, cartão nem e-mail. "
+               "Eu não preciso desses dados. Reescreva sem eles.")
+AVISO_LONGA = f"Sua pergunta ficou muito longa. Use até {TAMANHO_MAXIMO} letras."
+AVISO_VAZIA = "Escreva sua dúvida, por favor."
+TEXTO_FORA = ("Eu só ajudo com CadÚnico e benefícios sociais (Bolsa Família, "
+              "Pé-de-Meia, Tarifa Social, BPC, Gás do Povo e outros).")
+TEXTO_SAUDACAO = ("Oi, eu sou o CadU! Explico benefícios do CadÚnico, prazos e o que fazer. "
+                  "Qual é a sua dúvida?")
+TEXTO_NAO_ACHEI = ("Não encontrei uma orientação para isso e não vou inventar. "
+                   "Tente outras palavras ou veja as categorias. "
+                   "Para atendimento oficial, ligue 121 ou procure o CRAS da sua cidade.")
 
-TEXTO_SEM_RESPOSTA = (
-    "Não sei responder isso com segurança, e prefiro não inventar. "
-    "Ligue para o 121 (Central de Atendimento do Governo) ou procure o CRAS "
-    "da sua cidade. Lá eles ajudam de graça."
-)
-TEXTO_FORA_ESCOPO = (
-    "Eu só ajudo com CadÚnico e benefícios sociais (como Bolsa Família, "
-    "Tarifa Social de energia, BPC e outros). Pode me perguntar sobre isso!"
-)
-TEXTO_RECUSA_DADO = (
-    "Por segurança, não escreva números longos (CPF, NIS, telefone, cartão) "
-    "nem e-mail. Eu não preciso desses dados e não guardo nada disso. "
-    "Pode refazer a pergunta sem eles."
-)
-TEXTO_SAUDACAO = (
-    "Oi, eu sou o CadU! Posso explicar benefícios do CadÚnico, prazos e o que "
-    "fazer. Sobre o que você quer saber?"
-)
-
-# Palavras que indicam assunto de fora (lista curta e simples).
-PALAVRAS_FORA = {
-    "futebol", "piada", "receita", "bolo", "filme", "musica", "novela", "jogo",
-    "namorado", "namorada", "horoscopo", "bitcoin", "eleicao", "presidente",
-    "time", "celebridade", "clima", "carro", "celular", "programar",
-}
-SAUDACOES = {"oi", "ola", "bom dia", "boa tarde", "boa noite", "e ai"}
-
-
-@dataclass
-class Resposta:
-    nivel: str
-    texto: str
-    pontuacao: int = 0
-    orientacao_id: str = ""
-    categoria: str = ""
-    fonte_nome: str = ""
-    fonte_url: str = ""
-    data_verificacao: str = ""
-
-    def para_dict(self) -> dict:
-        return asdict(self)
-
-
-@dataclass
-class Consulta:
-    """Uma linha do histórico."""
-    momento: str
-    mensagem: str
-    nivel: str
-    pontuacao: int
-    orientacao_id: str
-    categoria: str
+# Palavras que mostram assunto de fora (lista curta e simples)
+PALAVRAS_FORA = {"futebol", "piada", "receita", "bolo", "filme", "musica", "novela",
+                 "jogo", "namorado", "namorada", "horoscopo", "bitcoin", "eleicao",
+                 "time", "celebridade", "clima", "carro", "programar"}
+SAUDACOES = {" oi ", " ola ", " bom dia ", " boa tarde ", " boa noite ", " e ai "}
 
 
 class Assistente:
-    def __init__(self, base: BaseConhecimento, guardar_texto: bool = True):
-        """guardar_texto=False: não guarda a mensagem digitada, só conta
-        (usado no app web, que não deve reter o que as pessoas escrevem)."""
-        self.base = base
-        self.guardar_texto = guardar_texto
-        self.historico: list[Consulta] = []
-        self.recusadas = 0
-        self._niveis = {ALTA: 0, MEDIA: 0, SEM_RESPOSTA: 0, FORA_ESCOPO: 0}
-        self._categorias: dict[str, int] = {}
+    def __init__(self, nome: str, base: BaseConhecimento, caminho_historico: str | None = None,
+                 entrada=input):
+        self.nome = nome
+        self.base = base                      # composição: o assistente TEM uma base
+        self.historico = []                   # lista de dicionários (um por atendimento)
+        self.caminho_historico = caminho_historico   # None = não grava em disco (app web)
+        self.entrada = entrada                # função de leitura (trocada nos testes)
+        self._desta_sessao = []               # atendimentos feitos agora (para a nota)
+        if caminho_historico:
+            self._ler_historico()
 
-    # ---------- segurança da entrada ----------
+    # ================= regras (sem input/print: o app web usa isto) =================
     @staticmethod
-    def entrada_insegura(mensagem: str) -> bool:
-        """True se tiver '@' ou 8+ dígitos (parece e-mail, CPF, telefone...)."""
-        digitos = sum(c.isdigit() for c in mensagem)
-        return "@" in mensagem or digitos >= 8
+    def tem_dado_pessoal(texto: str) -> bool:
+        """8 ou mais dígitos (CPF, NIS, telefone) ou '@' (e-mail)."""
+        return "@" in texto or sum(c.isdigit() for c in texto) >= 8
 
-    # ---------- resposta ----------
-    def responder(self, mensagem: str) -> Resposta:
-        mensagem = (mensagem or "").strip()
-        if not mensagem:
-            return Resposta(RECUSADA, "Escreva sua pergunta, por favor.")
-        if len(mensagem) > TAMANHO_MAXIMO:
-            return Resposta(RECUSADA, f"Mensagem muito longa. Use até {TAMANHO_MAXIMO} letras.")
-        if self.entrada_insegura(mensagem):
-            self.recusadas += 1          # só conta; o texto NÃO é guardado
-            return Resposta(RECUSADA, TEXTO_RECUSA_DADO)
+    def analisar(self, pergunta: str) -> dict:
+        """Aplica as regras e devolve um dicionário com o resultado.
+        tipo: vazia | longa | dado_pessoal | saudacao | fora_escopo | nao_encontrei | encontrada"""
+        pergunta = (pergunta or "").strip()
+        if not pergunta:
+            return {"tipo": "vazia", "mensagem": AVISO_VAZIA}
+        if len(pergunta) > TAMANHO_MAXIMO:
+            return {"tipo": "longa", "mensagem": AVISO_LONGA}
+        if self.tem_dado_pessoal(pergunta):
+            return {"tipo": "dado_pessoal", "mensagem": AVISO_DADOS}
 
-        orientacao, pontos = self.base.melhor(mensagem)
-        if pontos >= LIMITE_ALTA:
-            resp = self._com_orientacao(ALTA, orientacao, pontos)
-        elif pontos >= LIMITE_MEDIA:
-            resp = self._com_orientacao(MEDIA, orientacao, pontos)
-        elif self._eh_saudacao(mensagem):
-            resp = Resposta(FORA_ESCOPO, TEXTO_SAUDACAO, pontos)
-        elif self._eh_fora_escopo(mensagem):
-            resp = Resposta(FORA_ESCOPO, TEXTO_FORA_ESCOPO, pontos)
-        else:
-            resp = Resposta(SEM_RESPOSTA, TEXTO_SEM_RESPOSTA, pontos)
-        self._registrar(mensagem, resp)
-        return resp
+        resultados = self.base.buscar(pergunta)        # lista de tuplas (pontos, orientacao)
+        if resultados and resultados[0][0] >= LIMITE_MEDIA:
+            pontos, melhor = resultados[0]
+            alternativas = [o for p, o in resultados[1:3] if p >= LIMITE_MEDIA]
+            return {"tipo": "encontrada",
+                    "confianca": "ALTA" if pontos >= LIMITE_ALTA else "MÉDIA",
+                    "pontos": pontos, "orientacao": melhor, "alternativas": alternativas}
 
-    @staticmethod
-    def _eh_saudacao(mensagem: str) -> bool:
-        return " ".join(palavras(mensagem)) in SAUDACOES
+        normal = normalizar(pergunta)
+        if normal in SAUDACOES:
+            return {"tipo": "saudacao", "mensagem": TEXTO_SAUDACAO}
+        if set(normal.split()) & PALAVRAS_FORA:
+            return {"tipo": "fora_escopo", "mensagem": TEXTO_FORA}
+        return {"tipo": "nao_encontrei", "mensagem": TEXTO_NAO_ACHEI,
+                "categorias": self.base.categorias()}
 
-    @staticmethod
-    def _eh_fora_escopo(mensagem: str) -> bool:
-        return bool(set(palavras(mensagem)) & PALAVRAS_FORA)
+    # ================= histórico =================
+    def registrar(self, origem, pergunta, orientacao_id, encontrou, ajudou, tentativas, tempo):
+        """Guarda um atendimento. NUNCA é chamado para pergunta com dado pessoal."""
+        atendimento = {
+            "data": datetime.now().isoformat(timespec="seconds"),
+            "origem": origem,                      # "pergunta" ou "categoria"
+            "pergunta": pergunta,
+            "orientacao_id": orientacao_id,
+            "encontrou": encontrou,
+            "ajudou": ajudou,
+            "tentativas": tentativas,
+            "tempo_s": tempo,
+            "facilidade": None,                    # nota 1 a 5, pedida ao sair
+        }
+        self.historico.append(atendimento)
+        self._desta_sessao.append(atendimento)
+        self._salvar_historico()
 
-    @staticmethod
-    def _com_orientacao(nivel: str, o: Orientacao, pontos: int) -> Resposta:
-        partes = []
-        if nivel == MEDIA:
-            partes.append("Acho que isso pode ajudar (confira se é o que você queria):")
-        partes.append(o.resposta)
-        if o.passos:
-            partes.append("O que fazer:\n" + "\n".join(f"{i}. {p}" for i, p in enumerate(o.passos, 1)))
-        if o.prazo:
-            partes.append(f"Prazo: {o.prazo}")
-        return Resposta(nivel, "\n\n".join(partes), pontos, o.id, o.categoria,
-                        o.fonte_nome, o.fonte_url, o.data_verificacao)
+    def _ler_historico(self):
+        try:
+            with open(self.caminho_historico, encoding="utf-8") as f:
+                dados = json.load(f)
+            self.historico = dados if isinstance(dados, list) else []
+        except FileNotFoundError:
+            self.historico = []
+        except json.JSONDecodeError:
+            print("Aviso: historico.json estava corrompido; começando um histórico novo.")
+            self.historico = []
 
-    # ---------- histórico e indicadores ----------
-    def _registrar(self, mensagem: str, resp: Resposta) -> None:
-        self._niveis[resp.nivel] += 1
-        if resp.categoria:
-            self._categorias[resp.categoria] = self._categorias.get(resp.categoria, 0) + 1
-        if self.guardar_texto:
-            self.historico.append(Consulta(
-                datetime.now().isoformat(timespec="seconds"), mensagem, resp.nivel,
-                resp.pontuacao, resp.orientacao_id, resp.categoria))
+    def _salvar_historico(self):
+        if not self.caminho_historico:
+            return
+        try:
+            with open(self.caminho_historico, "w", encoding="utf-8") as f:
+                json.dump(self.historico, f, ensure_ascii=False, indent=2)
+        except OSError as e:
+            print(f"Aviso: não consegui salvar o histórico ({e}).")
 
+    # ================= indicadores e CSV =================
     def indicadores(self) -> dict:
+        h = self.historico
+        total = len(h)
+
+        def media(valores):
+            return round(sum(valores) / len(valores), 1) if valores else 0
+
+        achados = [a for a in h if a["encontrou"]]
+        notas = [a["facilidade"] for a in h if a.get("facilidade")]
         return {
-            "total": sum(self._niveis.values()),
-            "por_nivel": dict(self._niveis),
-            "por_categoria": dict(self._categorias),
-            "recusadas": self.recusadas,
+            "total": total,
+            "encontrada_pct": round(100 * len(achados) / total, 1) if total else 0,
+            "ajudou_pct": round(100 * sum(1 for a in h if a["ajudou"]) / total, 1) if total else 0,
+            "tempo_medio_s": media([a["tempo_s"] for a in achados]),
+            "tentativas_media": media([a["tentativas"] for a in h]),
+            "facilidade_media": media(notas),
+            "sem_solucao": [a["pergunta"] for a in h if not a["ajudou"] and a["origem"] == "pergunta"],
         }
 
-    def exportar_csv(self, caminho: str | Path) -> int:
-        """Salva o histórico em CSV (UTF-8 com BOM, abre bem no Excel).
-        Devolve o número de linhas gravadas."""
-        def seguro(v):
-            # Evita "injeção de fórmula" no Excel: célula que começa com = + - @
-            v = str(v)
-            return "'" + v if v[:1] in ("=", "+", "-", "@") else v
-
-        with open(caminho, "w", newline="", encoding="utf-8-sig") as f:
-            w = csv.writer(f, delimiter=";")
-            w.writerow(["momento", "mensagem", "nivel", "pontuacao", "orientacao_id", "categoria"])
-            for c in self.historico:
-                w.writerow([c.momento, seguro(c.mensagem), c.nivel, c.pontuacao,
-                            c.orientacao_id, c.categoria])
+    def exportar_csv(self, caminho: str) -> int:
+        """Exporta o histórico com csv.DictWriter. Devolve quantas linhas gravou."""
+        campos = ["data", "origem", "pergunta", "orientacao_id", "encontrou",
+                  "ajudou", "tentativas", "tempo_s", "facilidade"]
+        with open(caminho, "w", newline="", encoding="utf-8-sig") as f:   # -sig: abre bem no Excel
+            escritor = csv.DictWriter(f, fieldnames=campos, delimiter=";", extrasaction="ignore")
+            escritor.writeheader()
+            for a in self.historico:
+                linha = dict(a)
+                # Evita fórmula maliciosa no Excel (texto que começa com = + - @)
+                if str(linha["pergunta"])[:1] in ("=", "+", "-", "@"):
+                    linha["pergunta"] = "'" + linha["pergunta"]
+                escritor.writerow(linha)
         return len(self.historico)
+
+    # ================= leitura segura do teclado =================
+    def ler_opcao(self, mensagem: str, minimo: int, maximo: int) -> int:
+        """Repete até a pessoa digitar um número entre minimo e maximo."""
+        while True:
+            texto = self.entrada(mensagem).strip()
+            if texto.isdigit() and minimo <= int(texto) <= maximo:
+                return int(texto)
+            print(f"Opção inválida. Digite um número de {minimo} a {maximo}.")
+
+    def ler_sim_nao(self, mensagem: str) -> bool:
+        while True:
+            texto = normalizar(self.entrada(mensagem)).strip()
+            if texto in ("s", "sim"):
+                return True
+            if texto in ("n", "nao"):
+                return False
+            print("Responda s (sim) ou n (não).")
+
+    # ================= telas do terminal =================
+    def mostrar_encontrada(self, r: dict):
+        print(f"\nConfiança da resposta: {r['confianca']} ({r['pontos']} pontos)\n")
+        r["orientacao"].exibir()
+        if r["alternativas"]:
+            print("\nTalvez também ajude:")
+            for o in r["alternativas"]:
+                print(f"  - {o.titulo} [{o.categoria}]")
+        print()
+
+    def perguntar(self):
+        """Pergunta em texto livre. Um atendimento termina quando a pessoa diz que
+        ajudou, quando nada é encontrado ou quando ela volta com 0."""
+        tentativas, inicio, pendente = 0, None, None
+        while True:
+            pergunta = self.entrada("\nDigite sua dúvida (0 para voltar): ").strip()
+            if pergunta == "0":
+                if pendente:   # tinha resposta que não ajudou: fecha o atendimento
+                    self.registrar("pergunta", *pendente, False, tentativas,
+                                   round(time.time() - inicio, 1))
+                return
+            r = self.analisar(pergunta)
+            if r["tipo"] in ("vazia", "longa", "dado_pessoal", "saudacao"):
+                print(r["mensagem"])          # não conta e não registra
+                continue
+            if inicio is None:
+                inicio = time.time()
+            tentativas += 1
+            tempo = round(time.time() - inicio, 1)
+
+            if r["tipo"] != "encontrada":     # nao_encontrei ou fora_escopo
+                print(r["mensagem"])
+                if r["tipo"] == "nao_encontrei":
+                    print("Categorias: " + ", ".join(r["categorias"]))
+                self.registrar("pergunta", pergunta, None, False, False, tentativas, tempo)
+                tentativas, inicio, pendente = 0, None, None
+                continue
+
+            self.mostrar_encontrada(r)
+            o = r["orientacao"]
+            if self.ler_sim_nao("Essa orientação respondeu sua dúvida? (s/n): "):
+                self.registrar("pergunta", pergunta, o.id, True, True, tentativas,
+                               round(time.time() - inicio, 1))
+                tentativas, inicio, pendente = 0, None, None
+            else:
+                print("Tente escrever de outro jeito, ou digite 0 para voltar.")
+                pendente = (pergunta, o.id, True)
+
+    def navegar(self):
+        """Navegação por categorias numeradas, com 0 para voltar em todas as telas."""
+        while True:
+            cats = self.base.categorias()
+            print("\nCATEGORIAS")
+            for i, c in enumerate(cats, 1):
+                print(f"  {i}. {c}")
+            print("  0. Voltar")
+            n = self.ler_opcao("Escolha: ", 0, len(cats))
+            if n == 0:
+                return
+            inicio = time.time()
+            while True:
+                itens = self.base.por_categoria(cats[n - 1])
+                print(f"\n{cats[n - 1].upper()}")
+                for i, o in enumerate(itens, 1):
+                    print(f"  {i}. {o.titulo}")
+                print("  0. Voltar")
+                k = self.ler_opcao("Escolha: ", 0, len(itens))
+                if k == 0:
+                    break
+                o = itens[k - 1]
+                print()
+                o.exibir()
+                ajudou = self.ler_sim_nao("\nEssa orientação respondeu sua dúvida? (s/n): ")
+                self.registrar("categoria", o.titulo, o.id, True, ajudou, 1,
+                               round(time.time() - inicio, 1))
+                inicio = time.time()
+
+    def mostrar_indicadores(self):
+        ind = self.indicadores()
+        print("\nINDICADORES")
+        print(f"  Atendimentos: {ind['total']}")
+        print(f"  Resposta encontrada: {ind['encontrada_pct']}%")
+        print(f"  Taxa de acerto (ajudou): {ind['ajudou_pct']}%")
+        print(f"  Tempo médio para encontrar: {ind['tempo_medio_s']} s")
+        print(f"  Tentativas por atendimento: {ind['tentativas_media']}")
+        print(f"  Facilidade de uso (1 a 5): {ind['facilidade_media']}")
+        print("  Dúvidas sem solução:")
+        for p in ind["sem_solucao"] or ["(nenhuma)"]:
+            print(f"    - {p}")
+
+    def pedir_nota(self):
+        """Ao sair, pede a nota de facilidade e grava nos atendimentos desta sessão."""
+        if not self._desta_sessao:
+            return
+        nota = self.ler_opcao("De 1 a 5, quão fácil foi usar o assistente? ", 1, 5)
+        for a in self._desta_sessao:
+            a["facilidade"] = nota
+        self._salvar_historico()
+
+    def menu(self, caminho_csv: str):
+        print(f"\n=== {self.nome} ===")
+        print("Tiro dúvidas sobre CadÚnico e benefícios. Não sou canal oficial")
+        print("e nunca peço nome, CPF, telefone ou e-mail.")
+        while True:
+            print("\nMENU")
+            print("  1. Fazer uma pergunta")
+            print("  2. Ver por categoria")
+            print("  3. Ver indicadores")
+            print("  4. Exportar atendimentos (CSV)")
+            print("  0. Sair")
+            op = self.ler_opcao("Escolha: ", 0, 4)
+            if op == 1:
+                self.perguntar()
+            elif op == 2:
+                self.navegar()
+            elif op == 3:
+                self.mostrar_indicadores()
+            elif op == 4:
+                try:
+                    n = self.exportar_csv(caminho_csv)
+                    print(f"{n} atendimentos exportados para {caminho_csv}")
+                except OSError as e:
+                    print(f"Não consegui exportar ({e}).")
+            else:
+                self.pedir_nota()
+                print("Até logo! Em caso de dúvida, ligue 121 ou procure o CRAS.")
+                return

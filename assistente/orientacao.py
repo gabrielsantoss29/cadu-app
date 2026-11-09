@@ -1,65 +1,70 @@
-"""Classe Orientacao: um item da base de conhecimento (um assunto explicado)."""
-from dataclasses import dataclass, field
-
-from .texto import palavras
-
-# Campos que TODA orientação precisa ter no JSON.
-CAMPOS_OBRIGATORIOS = (
-    "id", "titulo", "categoria", "palavras_chave", "resposta",
-    "fonte_nome", "fonte_url", "data_verificacao",
-)
+"""Classe Orientacao: uma informação da base (um registro do JSON)."""
 
 
-@dataclass
 class Orientacao:
-    id: str
-    titulo: str
-    categoria: str
-    palavras_chave: list[str]
-    resposta: str
-    fonte_nome: str
-    fonte_url: str
-    data_verificacao: str              # formato AAAA-MM-DD
-    passos: list[str] = field(default_factory=list)   # "o que fazer", opcional
-    prazo: str = ""                    # texto livre, opcional
+    # Campos que o enunciado exige em todo registro do JSON.
+    OBRIGATORIOS = ("id", "categoria", "titulo", "palavras_chave", "resposta",
+                    "documentos", "onde", "fonte", "verificado_em")
 
-    @classmethod
-    def de_dicionario(cls, d: dict) -> "Orientacao":
-        """Cria a partir de um dict do JSON, conferindo os campos."""
-        faltando = [c for c in CAMPOS_OBRIGATORIOS if not d.get(c)]
+    def __init__(self, dados: dict):
+        """Recebe um dicionário do JSON. Se faltar campo, levanta ValueError."""
+        faltando = [c for c in self.OBRIGATORIOS if c not in dados]
         if faltando:
-            raise ValueError(f"orientação '{d.get('id', '?')}' sem: {', '.join(faltando)}")
-        if not isinstance(d["palavras_chave"], list):
-            raise ValueError(f"orientação '{d['id']}': palavras_chave deve ser lista")
-        return cls(
-            id=d["id"], titulo=d["titulo"], categoria=d["categoria"],
-            palavras_chave=list(d["palavras_chave"]), resposta=d["resposta"],
-            fonte_nome=d["fonte_nome"], fonte_url=d["fonte_url"],
-            data_verificacao=d["data_verificacao"],
-            passos=list(d.get("passos", [])), prazo=d.get("prazo", ""),
-        )
+            raise ValueError(f"registro {dados.get('id', '?')} sem: {', '.join(faltando)}")
+        if not isinstance(dados["palavras_chave"], list) or not isinstance(dados["documentos"], list):
+            raise ValueError(f"registro {dados['id']}: palavras_chave e documentos devem ser listas")
 
-    def palavras_do_titulo(self) -> list[str]:
-        """Palavras do título com 4+ letras (valem +1 ponto cada)."""
-        return [p for p in palavras(self.titulo) if len(p) >= 4]
+        # Atributos obrigatórios
+        self.id = dados["id"]
+        self.categoria = dados["categoria"]
+        self.titulo = dados["titulo"]
+        self.palavras_chave = dados["palavras_chave"]
+        self.resposta = dados["resposta"]
+        self.documentos = dados["documentos"]
+        self.onde = dados["onde"]
+        self.fonte = dados["fonte"]
+        self.verificado_em = dados["verificado_em"]
 
-    def pontuar(self, mensagem: str) -> int:
-        """Regra de pontos: +3 por palavra-chave achada, +1 por palavra do título."""
-        tokens = palavras(mensagem)
-        conjunto = set(tokens)
-        texto = " " + " ".join(tokens) + " "
-        pontos = 0
-        for kw in self.palavras_chave:
-            kw_n = " ".join(palavras(kw))
-            if not kw_n:
-                continue
-            if " " in kw_n:                      # frase: procura inteira
-                achou = f" {kw_n} " in texto
-            else:                                # palavra: aceita plural simples
-                achou = kw_n in conjunto or kw_n + "s" in conjunto or kw_n + "es" in conjunto
-            if achou:
-                pontos += 3
-        for p in set(self.palavras_do_titulo()):
-            if p in conjunto:
-                pontos += 1
-        return pontos
+        # Atributos extras do CadU (opcionais no JSON)
+        self.fonte_nome = dados.get("fonte_nome", "")
+        self.quem_pode = dados.get("quem_pode", "")
+        self.como_pedir = dados.get("como_pedir", "")
+        self.renovacao = dados.get("renovacao", "")
+        self.se_bloquear = dados.get("se_acabar_ou_bloquear", "")
+        self.conferido_por_humano = dados.get("conferido_por_humano", False)
+
+    def texto(self) -> str:
+        """Monta o texto da orientação (usado no terminal e no app)."""
+        linhas = [f">> {self.titulo}  [{self.categoria}]", self.resposta]
+        if self.quem_pode:
+            linhas.append(f"Quem pode: {self.quem_pode}")
+        if self.como_pedir:
+            linhas.append(f"Como pedir: {self.como_pedir}")
+        if self.documentos:
+            linhas.append("Documentos necessários:")
+            linhas += [f"  - {d}" for d in self.documentos]
+        linhas.append(f"Onde: {self.onde}")
+        if self.renovacao:
+            linhas.append(f"Prazo/renovação: {self.renovacao}")
+        if self.se_bloquear:
+            linhas.append(f"Se bloquear ou acabar: {self.se_bloquear}")
+        linhas.append(f"Fonte: {self.fonte} (verificado em {self.verificado_em})")
+        if not self.conferido_por_humano:
+            linhas.append("(Rascunho: esta informação ainda não foi conferida pela equipe.)")
+        linhas.append("Aviso: este assistente NÃO é um canal oficial.")
+        return "\n".join(linhas)
+
+    def exibir(self) -> None:
+        """Mostra a orientação na tela."""
+        print(self.texto())
+
+    def para_dict(self) -> dict:
+        """Versão em dicionário, para o app web devolver em JSON."""
+        return {
+            "id": self.id, "categoria": self.categoria, "titulo": self.titulo,
+            "resposta": self.resposta, "quem_pode": self.quem_pode,
+            "como_pedir": self.como_pedir, "documentos": self.documentos,
+            "onde": self.onde, "renovacao": self.renovacao, "se_bloquear": self.se_bloquear,
+            "fonte": self.fonte, "fonte_nome": self.fonte_nome,
+            "verificado_em": self.verificado_em, "conferido_por_humano": self.conferido_por_humano,
+        }
