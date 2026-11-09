@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block titulo %}CadU{% endblock %} · CadU</title>
+  <!-- PLACEHOLDER: Tailwind pelo CDN só para desenvolver. Trocar pelo build/modelo de design escolhido. -->
+  <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 text-xl leading-relaxed">
+
+  <!-- Menu lateral (computador) -->
+  <aside class="hidden md:flex fixed inset-y-0 left-0 w-60 flex-col gap-2 bg-white border-r border-slate-200 p-4">
+    <div class="text-3xl font-bold text-emerald-700 mb-4">CadU</div>
+    {% for url, nome, icone, chave in abas %}
+    <a href="{{ url }}" class="flex items-center gap-3 rounded-xl px-4 py-3 text-xl font-semibold
+       {{ 'bg-emerald-100 text-emerald-800' if chave == aba else 'text-slate-700 hover:bg-slate-100' }}">
+      <span class="text-2xl" aria-hidden="true">{{ icone }}</span>{{ nome }}
+    </a>
+    {% endfor %}
+  </aside>
+
+  <main class="md:ml-60 px-4 py-6 pb-32 md:pb-10 max-w-3xl mx-auto">
+    {% if base_exemplo %}
+    <p class="mb-4 rounded-lg bg-amber-100 border border-amber-300 p-3 text-base">
+      Base de EXEMPLO em uso: os textos ainda não são orientação oficial.
+    </p>
+    {% endif %}
+    {% block conteudo %}{% endblock %}
+  </main>
+
+  <!-- Botão redondo do CadU, em todas as telas (menos no próprio chat) -->
+  {% if aba != 'cadu' %}
+  <a href="/cadu" aria-label="Falar com o CadU"
+     class="fixed right-4 bottom-24 md:bottom-6 md:right-6 z-30 flex h-16 w-16 items-center justify-center
+            rounded-full bg-emerald-600 text-3xl text-white shadow-lg hover:bg-emerald-700">💬</a>
+  {% endif %}
+
+  <!-- Barra inferior (celular) -->
+  <nav class="md:hidden fixed bottom-0 inset-x-0 z-20 flex justify-around bg-white border-t border-slate-200 py-2">
+    {% for url, nome, icone, chave in abas %}
+    <a href="{{ url }}" class="flex flex-col items-center px-2 py-1 text-sm font-semibold
+       {{ 'text-emerald-700' if chave == aba else 'text-slate-600' }}">
+      <span class="text-2xl" aria-hidden="true">{{ icone }}</span>{{ nome }}
+    </a>
+    {% endfor %}
+  </nav>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+  {% block scripts %}{% endblock %}
+</body>
+</html>

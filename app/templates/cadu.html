@@ -1,0 +1,23 @@
+{% extends "base.html" %}
+{% block titulo %}Conversa{% endblock %}
+{% block conteudo %}
+<div class="flex items-center justify-between mb-3">
+  <h1 class="text-3xl font-bold">CadU 💬</h1>
+  <span id="passo" class="text-base text-slate-500"></span>
+</div>
+
+<!-- As mensagens são criadas pelo JavaScript com textContent (nunca innerHTML): isso escapa o HTML. -->
+<div id="mensagens" class="flex flex-col gap-3 mb-4" aria-live="polite"></div>
+<div id="opcoes" class="flex flex-wrap gap-3 mb-4"></div>
+
+<form id="form-chat" class="hidden sticky bottom-24 md:bottom-4 flex gap-2 bg-slate-50 py-2" autocomplete="off">
+  <input id="campo" type="text" maxlength="300" placeholder="Escreva sua dúvida"
+         class="flex-1 rounded-xl border border-slate-300 bg-white px-4 py-3 text-xl">
+  <button class="rounded-xl bg-emerald-600 px-5 py-3 font-bold text-white hover:bg-emerald-700">Enviar</button>
+</form>
+<p id="aviso-dados" class="hidden text-base text-slate-600">Não escreva CPF, telefone nem e-mail. Não preciso deles.</p>
+<button id="recomecar" class="hidden mt-4 text-base underline text-slate-600">Apagar meus dados e recomeçar</button>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='chat.js') }}"></script>
+{% endblock %}
