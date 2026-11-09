@@ -1,6 +1,6 @@
-# App web do CadU (esqueleto)
+# App web do CadU
 
-Flask + páginas HTML com Tailwind. **Visual provisório (placeholder)**: o modelo de design ainda será escolhido.
+Flask + páginas HTML com Tailwind. O app oficial do Cadastro Único consulta e informa; o CadU **acompanha**: linguagem simples, áudio, triagem, passo a passo quando dá problema, calculadora de energia. Consulta por CPF e comprovante ficam com o app oficial (o CadU leva a pessoa até lá).
 
 ## Como rodar local
 
@@ -14,26 +14,42 @@ app/.venv/Scripts/python app/app.py
 
 Abra http://127.0.0.1:5000. Testes: `app/.venv/Scripts/python -m unittest app.test_app`.
 
-## O que tem
+## Telas
 
-- `app.py`: rotas das páginas (`/`, `/beneficios`, `/energia`, `/cadu`, `/mais`) e a API `POST /api/chat` (`{"mensagem": "..."}`), que usa o pacote `assistente/` (o mesmo do terminal).
-- `templates/`: páginas Jinja (escapam HTML sozinhas). `base.html` tem o menu lateral (computador), a barra de baixo (celular) e o botão redondo do CadU.
-- `static/app.js`: apagar dados, botão "Ouvir" (voz do navegador, provisória).
-- `static/chat.js`: triagem de 4 passos e chat. Respostas só no `localStorage` do aparelho. Todo texto entra na tela com `textContent` (nunca `innerHTML`).
+- `/` Início: atalhos grandes (dúvida, benefícios, bloqueio, atualizar cadastro, conta de luz, atendimento).
+- `/triagem`: uma pergunta por tela, 4 passos (abertura, "já está no CadÚnico?", "quais benefícios recebe?", chat). Nunca pergunta renda.
+- `/beneficios`: cartões por categoria, etiquetas "Você recebe" (da triagem) e "Pode combinar" (da base, campo `pode_combinar`).
+- `/cadu`: chat estilo WhatsApp com microfone grande e botão "Ouvir" em cada resposta.
+- `/energia`: calculadora (aparelhos, horas por dia, kWh por mês, custo com preço do kWh editável, comparação com limite, dicas).
+- `/mais`: atendimento oficial (121, CRAS, app oficial), apagar meus dados, sobre.
 
-## Base de dados
+Layout: menu lateral no computador, barra inferior no celular, botão redondo do CadU (mascote) em todas as telas, menos chat e triagem. Letra mínima 16px e alvos de toque de 48px ou mais.
 
-Usa `dados/base.json`; se não existir, `dados/base_exemplo.json` (aparece um aviso amarelo). Dá para forçar outra com a variável `CADU_BASE`.
+## Arquivos
 
-## Privacidade e Vercel
+- `app.py`: rotas e API. `POST /api/chat` (`{"mensagem": "..."}`) usa `Assistente.analisar()` de `assistente/` (o mesmo código do terminal). `GET /api/orientacao/<codigo>` abre um assunto direto (atalhos).
+- `templates/`: páginas Jinja (escapam HTML sozinhas). `base.html` tem a paleta, o menu e o botão flutuante; `_icones.html` tem os ícones.
+- `static/mascote.svg`: mascote **provisório**. Para trocar a persona, troque só este arquivo.
+- `static/app.js` (comum), `triagem.js`, `chat.js`, `energia.js`.
+- Dados da energia: `../energia/aparelhos_provisorio.json` (**provisório**, até chegar o `energia.json`). O limite de comparação é `limite_kwh` nesse arquivo.
 
-- Não escreve em disco. O assistente roda com `guardar_texto=False`: o servidor não guarda o que a pessoa digita.
-- A triagem nunca pergunta renda e não pede nome/CPF; o assistente recusa mensagens com `@` ou 8+ dígitos.
-- Para publicar na Vercel: o arquivo `app.py` expõe a variável `app`. Falta configurar o projeto na Vercel (a pasta `assistente/` e `dados/` ficam fora de `app/`, então o projeto deve ser publicado a partir da raiz ou com "incluir arquivos fora do diretório raiz" ligado).
+Paleta: azul `#1B5FC1`, azul escuro `#12408A`, azul claro `#E6EEFB`, fundo `#F6F9FF`, texto `#14213D`, amarelo `#F5B72E`; verde só para sucesso.
+
+## Privacidade e segurança
+
+- O servidor não grava nada em disco nem guarda o que a pessoa digita (o assistente roda sem histórico).
+- A triagem fica só no `localStorage` do aparelho, com "Apagar meus dados".
+- O assistente recusa mensagens com `@` ou 8+ dígitos e com mais de 300 letras.
+- Todo texto entra na tela com `textContent` (nunca `innerHTML`); links da fonte só se forem http/https.
+
+## Vercel
+
+`app.py` expõe a variável `app`. As pastas `assistente/` e `energia/` ficam fora de `app/`: publicar a partir da raiz do repositório (ainda não configurado).
 
 ## Falta fazer
 
-- Aplicar o modelo de design escolhido (trocar o Tailwind por CDN pelo build).
-- Pergunta "Quem mora com você", dentro do chat, só quando fizer sentido.
-- Calculadora de energia, mapa de postos (Leaflet, só São Paulo), voz (Whisper/Kokoro).
-- Contagens anônimas em banco Neon.
+- Voz própria (Whisper e Kokoro). Hoje "Ouvir" e o microfone usam a voz do navegador; o microfone não funciona em todo navegador (o chat avisa).
+- Mapa de postos (Leaflet, São Paulo).
+- Pergunta "Quem mora com você", dentro do chat, quando fizer sentido.
+- Etiqueta "Pode combinar": depende do campo `pode_combinar` vir da pesquisa.
+- Contagens anônimas em banco Neon. Deploy na Vercel.

@@ -1,0 +1,33 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 120 120" role="img" aria-label="CadU, o assistente">
+  <!-- MASCOTE PROVISÓRIO do CadU. Para trocar a persona, substitua só este arquivo. -->
+  <circle cx="60" cy="60" r="58" fill="#E6EEFB"/>
+  <!-- corpo / camiseta -->
+  <path d="M22 116c4-22 20-32 38-32s34 10 38 32z" fill="#1B5FC1"/>
+  <path d="M50 86h20l-10 12z" fill="#F6F9FF"/>
+  <text x="60" y="112" text-anchor="middle" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#F5B72E">U</text>
+  <!-- pescoço -->
+  <rect x="52" y="72" width="16" height="14" rx="6" fill="#7A4A2A"/>
+  <!-- cabelo cacheado (atrás) -->
+  <g fill="#2B1A12">
+    <circle cx="36" cy="44" r="11"/><circle cx="84" cy="44" r="11"/>
+    <circle cx="40" cy="30" r="12"/><circle cx="80" cy="30" r="12"/>
+    <circle cx="52" cy="22" r="12"/><circle cx="68" cy="22" r="12"/>
+    <circle cx="60" cy="18" r="11"/>
+  </g>
+  <!-- rosto -->
+  <ellipse cx="60" cy="52" rx="22" ry="25" fill="#8D5A36"/>
+  <!-- orelhas -->
+  <circle cx="38" cy="54" r="5" fill="#7A4A2A"/><circle cx="82" cy="54" r="5" fill="#7A4A2A"/>
+  <!-- cachos da frente -->
+  <g fill="#2B1A12">
+    <circle cx="44" cy="34" r="7"/><circle cx="54" cy="30" r="7"/>
+    <circle cx="65" cy="30" r="7"/><circle cx="75" cy="34" r="7"/>
+  </g>
+  <!-- olhos e sobrancelhas -->
+  <circle cx="51" cy="53" r="3.2" fill="#14213D"/><circle cx="69" cy="53" r="3.2" fill="#14213D"/>
+  <circle cx="52" cy="52" r="1" fill="#fff"/><circle cx="70" cy="52" r="1" fill="#fff"/>
+  <path d="M46 46q5-3 10 0M64 46q5-3 10 0" stroke="#2B1A12" stroke-width="2.2" fill="none" stroke-linecap="round"/>
+  <!-- bochechas e sorriso -->
+  <circle cx="45" cy="61" r="3.5" fill="#B9714A" opacity=".6"/><circle cx="75" cy="61" r="3.5" fill="#B9714A" opacity=".6"/>
+  <path d="M51 64q9 8 18 0" stroke="#14213D" stroke-width="2.6" fill="none" stroke-linecap="round"/>
+</svg>

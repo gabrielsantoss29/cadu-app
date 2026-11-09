@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+{% block titulo %}Página não encontrada{% endblock %}
+{% block conteudo %}
+<div class="text-center">
+  <img src="{{ url_for('static', filename='mascote.svg') }}" alt="" class="mx-auto h-32 w-32">
+  <h1 class="mt-4 text-3xl font-extrabold">Não achei essa página</h1>
+  <a href="/" class="mt-6 min-h-toque inline-flex items-center gap-2 rounded-xl bg-cadu px-6 py-3 text-xl font-bold text-white">{{ icone('casa') }} Voltar ao início</a>
+</div>
+{% endblock %}

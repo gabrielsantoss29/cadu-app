@@ -1,29 +1,85 @@
 {% extends "base.html" %}
 {% block titulo %}Benefícios{% endblock %}
 {% block conteudo %}
-<h1 class="text-3xl font-bold mb-4">Benefícios 🎁</h1>
-<p class="mb-6">Toque em um assunto para ver a explicação.</p>
+<h1 class="flex items-center gap-3 text-3xl font-extrabold">{{ icone('presente', 'h-8 w-8 text-cadu') }} Benefícios</h1>
+<p class="mt-2 mb-4">Toque em um cartão para ver o passo a passo.</p>
 
-<div class="grid gap-3">
-  {% for o in orientacoes %}
-  <details class="rounded-2xl bg-white border border-slate-200 p-4">
-    <summary class="cursor-pointer text-2xl font-bold">{{ o.titulo }}
-      <span class="block text-base font-normal text-slate-500">{{ o.categoria }}</span>
-    </summary>
-    <div class="mt-3">
-      <p id="ben-{{ o.id }}" class="whitespace-pre-line">{{ o.resposta }}</p>
-      {% if o.passos %}
-      <p class="mt-3 font-bold">O que fazer:</p>
-      <ol class="list-decimal ml-6">{% for p in o.passos %}<li>{{ p }}</li>{% endfor %}</ol>
-      {% endif %}
-      {% if o.prazo %}<p class="mt-3"><strong>Prazo:</strong> {{ o.prazo }}</p>{% endif %}
-      <p class="mt-3 text-base text-slate-600">
-        Fonte: <a class="underline text-sky-700" href="{{ o.fonte_url }}" target="_blank" rel="noopener noreferrer">{{ o.fonte_nome }}</a>
-        · verificado em {{ o.data_verificacao }}
-      </p>
-      <button data-ouvir="#ben-{{ o.id }}" class="mt-3 rounded-xl bg-sky-600 px-4 py-2 font-semibold text-white">🔊 Ouvir</button>
-    </div>
-  </details>
+<!-- Atalhos para as categorias -->
+<nav class="mb-6 flex gap-2 overflow-x-auto pb-2" aria-label="Categorias">
+  {% for categoria, itens in grupos %}
+  <a href="#cat-{{ loop.index }}" class="min-h-toque inline-flex shrink-0 items-center rounded-full border-2 border-cadu bg-white px-4 text-base font-semibold text-cadu-escuro hover:bg-cadu-claro">{{ categoria }}</a>
   {% endfor %}
-</div>
+</nav>
+
+{% for categoria, itens in grupos %}
+<section id="cat-{{ loop.index }}" class="mb-8 scroll-mt-20">
+  <h2 class="mb-3 text-2xl font-bold text-cadu-escuro">{{ categoria }}</h2>
+  <div class="grid gap-4">
+    {% for o in itens %}
+    <article class="cartao rounded-2xl border border-cadu-claro bg-white shadow-sm" data-codigo="{{ o.codigo }}">
+      <details>
+        <summary class="flex min-h-toque cursor-pointer list-none items-start gap-3 p-5">
+          <div class="flex-1">
+            <!-- Etiquetas: "Você recebe" vem do que a pessoa marcou na triagem; "Pode combinar" vem da base -->
+            <div class="etiquetas mb-2 flex flex-wrap gap-2">
+              {% if o.pode_combinar %}
+              <span class="rounded-full bg-cadu-amarelo px-3 py-0.5 text-base font-bold text-cadu-texto">Pode combinar</span>
+              {% endif %}
+            </div>
+            <h3 class="text-xl font-bold">{{ o.titulo }}</h3>
+            <p class="mt-1 text-slate-700 line-clamp-2">{{ o.resposta }}</p>
+          </div>
+          {{ icone('seta-direita', 'mt-1 h-7 w-7 text-cadu') }}
+        </summary>
+        <div id="ben-{{ o.id }}" class="border-t border-cadu-claro px-5 pb-5 pt-4 text-lg">
+          <p>{{ o.resposta }}</p>
+          {% if o.quem_pode %}<p class="mt-3"><strong>Quem pode:</strong> {{ o.quem_pode }}</p>{% endif %}
+          {% if o.como_pedir %}<p class="mt-3"><strong>Como pedir:</strong> {{ o.como_pedir }}</p>{% endif %}
+          {% if o.documentos %}
+          <p class="mt-3 font-bold">Documentos:</p>
+          <ul class="ml-6 list-disc">{% for d in o.documentos %}<li>{{ d }}</li>{% endfor %}</ul>
+          {% endif %}
+          <p class="mt-3"><strong>Onde:</strong> {{ o.onde }}</p>
+          {% if o.renovacao %}<p class="mt-3"><strong>Prazo:</strong> {{ o.renovacao }}</p>{% endif %}
+          {% if o.se_bloquear %}<p class="mt-3 rounded-xl bg-amber-50 p-3"><strong>Se bloquear ou acabar:</strong> {{ o.se_bloquear }}</p>{% endif %}
+          {% if o.pode_combinar %}
+          <p class="mt-3"><strong>Pode receber junto com:</strong>
+            {% for c in o.pode_combinar %}{{ titulos.get(c, c) }}{{ ", " if not loop.last }}{% endfor %}</p>
+          {% endif %}
+        </div>
+        <div class="flex flex-wrap items-center gap-3 px-5 pb-5">
+          <button data-ouvir="#ben-{{ o.id }}" class="min-h-toque inline-flex items-center gap-2 rounded-xl bg-cadu px-4 py-2 font-semibold text-white hover:bg-cadu-escuro">{{ icone('ouvir') }} Ouvir</button>
+          <a href="/cadu?abrir={{ o.codigo }}" class="min-h-toque inline-flex items-center gap-2 rounded-xl bg-cadu-claro px-4 py-2 font-semibold text-cadu-escuro">{{ icone('conversa') }} Perguntar ao CadU</a>
+        </div>
+        <p class="px-5 pb-5 text-base text-slate-600">
+          Fonte: <a class="inline-flex min-h-toque items-center underline text-cadu" href="{{ o.fonte }}" target="_blank" rel="noopener noreferrer">{{ o.fonte_nome or o.fonte }}</a>
+          · conferido em {{ o.verificado_em }}{% if not o.conferido_por_humano %} · <em>em conferência</em>{% endif %}
+        </p>
+      </details>
+    </article>
+    {% endfor %}
+  </div>
+</section>
+{% endfor %}
+{% endblock %}
+{% block scripts %}
+<script>
+  // Coloca a etiqueta "Você recebe" nos cartões dos benefícios marcados na triagem.
+  // Cada nome da triagem aponta para o começo do código das orientações daquele benefício.
+  const RECEBE = {
+    "Bolsa Família": "bolsa-familia",
+    "Pé-de-Meia": "pe-de-meia",
+    "Tarifa Social": "tarifa-social",
+    "BPC": "bpc",
+    "Gás do Povo": "gas-do-povo",
+  };
+  const meus = (CadU.lerPerfil().beneficios || []).map(n => RECEBE[n]).filter(Boolean);
+  document.querySelectorAll(".cartao").forEach(function (cartao) {
+    if (meus.some(prefixo => cartao.dataset.codigo.startsWith(prefixo))) {
+      const tag = CadU.el("span", "rounded-full bg-green-600 px-3 py-0.5 text-base font-bold text-white", "Você recebe");
+      cartao.querySelector(".etiquetas").prepend(tag);
+      cartao.classList.add("ring-2", "ring-green-600");
+    }
+  });
+</script>
 {% endblock %}

@@ -62,6 +62,8 @@ def converter(entradas):
             "status_verificacao": e.get("status_verificacao", ""),
             "conferido_por_humano": bool(e.get("conferido_por_humano", False)),
         })
+        if e.get("pode_combinar"):          # lista de códigos, se a pesquisa trouxer
+            base[-1]["pode_combinar"] = e["pode_combinar"]
     return base
 
 

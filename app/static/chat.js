@@ -1,184 +1,233 @@
-// Chat do CadU + triagem de 4 passos.
-// 1 abertura -> 2 "já está no CadÚnico?" -> 3 "quais benefícios?" (só se Sim) -> 4 chat livre.
-// Tudo que a pessoa responde fica só no localStorage deste aparelho.
+// Chat do CadU (estilo WhatsApp).
+// - Quem ainda não fez a triagem vai para /triagem.
+// - A conversa NÃO é salva: só o perfil da triagem fica no localStorage.
+// - Todo texto entra na tela com textContent (CadU.el), nunca com innerHTML.
 (function () {
-  const $mensagens = document.getElementById("mensagens");
-  const $opcoes = document.getElementById("opcoes");
+  const $msgs = document.getElementById("mensagens");
+  const $sug = document.getElementById("sugestoes");
   const $form = document.getElementById("form-chat");
   const $campo = document.getElementById("campo");
-  const $passo = document.getElementById("passo");
-  const $aviso = document.getElementById("aviso-dados");
-  const $recomecar = document.getElementById("recomecar");
+  const $mic = document.getElementById("microfone");
+  const el = CadU.el.bind(CadU);
 
-  const BENEFICIOS = ["Bolsa Família", "Pé-de-Meia", "Tarifa Social", "BPC", "Gás do Povo", "Outro", "Nenhum ainda"];
+  const perfil = CadU.lerPerfil();
+  const abrir = new URLSearchParams(location.search).get("abrir");   // atalho: /cadu?abrir=codigo
+  // Sem triagem feita (e sem atalho), vai primeiro para as perguntinhas.
+  if (perfil.etapa !== "concluida" && !abrir) { location.replace("/triagem"); return; }
 
-  let perfil = CadU.lerPerfil();
+  // ---------- desenho das mensagens ----------
+  function rolar() { $msgs.scrollTop = $msgs.scrollHeight; }
 
-  // ---- desenho na tela (sempre textContent: nunca interpreta HTML) ----
-  function mensagem(quem, texto, resp) {
-    const div = document.createElement("div");
-    const eh_cadu = quem === "cadu";
-    div.className = "max-w-[90%] rounded-2xl p-4 whitespace-pre-line " +
-      (eh_cadu ? "self-start bg-white border border-slate-200" : "self-end bg-emerald-600 text-white");
-    const p = document.createElement("p");
-    p.textContent = texto;
-    div.appendChild(p);
+  function balao(quem) {
+    const linha = el("div", "flex " + (quem === "cadu" ? "justify-start" : "justify-end"));
+    const b = el("div", "max-w-[88%] md:max-w-[70%] rounded-2xl px-4 py-3 shadow-sm " +
+      (quem === "cadu" ? "rounded-tl-sm bg-white" : "rounded-tr-sm bg-cadu text-white"));
+    linha.appendChild(b);
+    $msgs.appendChild(linha);
+    return b;
+  }
 
-    if (eh_cadu) {
-      if (resp && resp.fonte_url && resp.fonte_url.startsWith("https://")) {
-        const f = document.createElement("p");
-        f.className = "mt-2 text-base text-slate-600";
-        f.append("Fonte: ");
-        const a = document.createElement("a");
-        a.href = resp.fonte_url; a.target = "_blank"; a.rel = "noopener noreferrer";
-        a.className = "underline text-sky-700";
-        a.textContent = resp.fonte_nome;
-        f.appendChild(a);
-        f.append(" · verificado em " + resp.data_verificacao);
-        div.appendChild(f);
-      }
-      const ouvir = document.createElement("button");
-      ouvir.type = "button";
-      ouvir.className = "mt-2 rounded-lg bg-sky-600 px-3 py-1 text-base font-semibold text-white";
-      ouvir.textContent = "🔊 Ouvir";
-      ouvir.addEventListener("click", () => CadU.ouvir(texto));
-      div.appendChild(ouvir);
+  function botaoOuvir(texto) {
+    const b = el("button", "mt-2 inline-flex min-h-[48px] items-center gap-2 rounded-xl bg-cadu-claro px-4 text-base font-semibold text-cadu-escuro");
+    b.type = "button";
+    b.appendChild(CadU.icone("ouvir", "h-5 w-5"));
+    b.append("Ouvir");
+    b.addEventListener("click", () => CadU.ouvir(texto));
+    return b;
+  }
+
+  function falaCadu(texto) {
+    const b = balao("cadu");
+    b.appendChild(el("p", "whitespace-pre-line", texto));
+    b.appendChild(botaoOuvir(texto));
+    rolar();
+    return b;
+  }
+
+  function falaVoce(texto) {
+    balao("voce").appendChild(el("p", "whitespace-pre-line break-words", texto));
+    rolar();
+  }
+
+  function linhaInfo(pai, rotulo, valor) {
+    if (!valor) return;
+    const p = el("p", "mt-2");
+    p.appendChild(el("strong", "", rotulo + ": "));
+    p.append(valor);
+    pai.appendChild(p);
+  }
+
+  // Mostra uma orientação da base: título, resposta, passo a passo, fonte e avisos.
+  function falaOrientacao(r) {
+    const o = r.orientacao;
+    const b = balao("cadu");
+
+    const selo = el("span", "inline-block rounded-full px-3 py-0.5 text-base font-bold " +
+      (r.confianca === "ALTA" ? "bg-green-600 text-white" : "bg-cadu-amarelo text-cadu-texto"),
+      r.confianca === "ALTA" ? "Achei a resposta" : "Acho que é isso. Confira:");
+    b.appendChild(selo);
+    b.appendChild(el("p", "mt-2 text-xl font-bold", o.titulo));
+    b.appendChild(el("p", "mt-1", o.resposta));
+
+    const det = el("details", "mt-2 rounded-xl bg-cadu-fundo p-3");
+    det.appendChild(el("summary", "min-h-[48px] cursor-pointer py-2 font-bold text-cadu-escuro", "Ver passo a passo"));
+    linhaInfo(det, "Quem pode", o.quem_pode);
+    linhaInfo(det, "Como pedir", o.como_pedir);
+    if (o.documentos && o.documentos.length) linhaInfo(det, "Documentos", o.documentos.join("; "));
+    linhaInfo(det, "Onde", o.onde);
+    linhaInfo(det, "Prazo", o.renovacao);
+    linhaInfo(det, "Se bloquear ou acabar", o.se_bloquear);
+    b.appendChild(det);
+
+    // Fonte e data (o link só é criado se for http/https)
+    const fonte = el("p", "mt-3 text-base text-slate-600");
+    fonte.append("Fonte: ");
+    if (/^https?:\/\//.test(o.fonte)) {
+      const a = el("a", "inline-flex min-h-[48px] items-center underline text-cadu", o.fonte_nome || o.fonte);
+      a.href = o.fonte; a.target = "_blank"; a.rel = "noopener noreferrer";
+      fonte.appendChild(a);
+    } else {
+      fonte.append(o.fonte_nome || o.fonte);
     }
-    $mensagens.appendChild(div);
-    div.scrollIntoView({ block: "end", behavior: "smooth" });
+    fonte.append(" · conferido em " + o.verificado_em);
+    b.appendChild(fonte);
+    if (!o.conferido_por_humano) {
+      b.appendChild(el("p", "mt-1 text-base text-amber-700", "Informação ainda em conferência pela equipe."));
+    }
+    b.appendChild(el("p", "mt-1 text-base text-slate-600", "O CadU não é canal oficial."));
+    b.appendChild(botaoOuvir(o.titulo + ". " + o.resposta));
+    rolar();
+
+    // Depois da resposta: alternativas e "isso ajudou?"
+    const opcoes = [];
+    (r.alternativas || []).forEach(alt =>
+      opcoes.push(["Talvez seja: " + alt.titulo, () => abrirCodigo(alt.codigo, alt.titulo)]));
+    opcoes.push(["Ajudou", () => { falaVoce("Ajudou"); falaCadu("Que bom! Quer perguntar mais alguma coisa?"); sugestoesPadrao(); }]);
+    opcoes.push(["Não ajudou", () => {
+      falaVoce("Não ajudou");
+      falaCadu("Tente escrever de outro jeito ou veja a aba Benefícios. Se preferir, ligue 121 ou procure o CRAS da sua cidade.");
+      sugestoesPadrao();
+    }]);
+    sugestoes(opcoes);
   }
 
-  function opcoes(lista, aoEscolher) {
-    $opcoes.replaceChildren();
-    lista.forEach(function (rotulo) {
-      const b = document.createElement("button");
+  // ---------- botões rápidos ----------
+  function sugestoes(lista) {
+    $sug.replaceChildren();
+    lista.forEach(function ([rotulo, acao]) {
+      const b = el("button", "min-h-[48px] shrink-0 rounded-full border-2 border-cadu bg-white px-4 text-base font-bold text-cadu-escuro hover:bg-cadu-claro", rotulo);
       b.type = "button";
-      b.className = "rounded-xl bg-white border-2 border-emerald-600 px-5 py-3 font-bold text-emerald-800 hover:bg-emerald-50";
-      b.textContent = rotulo;
-      b.addEventListener("click", () => { $opcoes.replaceChildren(); aoEscolher(rotulo); });
-      $opcoes.appendChild(b);
+      b.addEventListener("click", () => { $sug.replaceChildren(); acao(); });
+      $sug.appendChild(b);
     });
   }
 
-  function mostrarPasso(n) { $passo.textContent = n ? "Passo " + n + " de 4" : ""; }
-
-  // ---- passos da triagem ----
-  function passo1() {
-    mostrarPasso(1);
-    mensagem("cadu", "Oi, eu sou o CadU! Vou te fazer umas perguntinhas. Não sei quem você é e não guardo nome, CPF nem renda.");
-    opcoes(["Vamos lá"], passo2);
+  function sugestoesPadrao() {
+    sugestoes([
+      ["Meu benefício bloqueou", () => abrirCodigo("bolsa-familia-bloqueio-cancelamento", "Meu benefício bloqueou")],
+      ["Atualizar cadastro", () => abrirCodigo("cadunico-atualizar", "Atualizar cadastro")],
+      ["Quando cai o pagamento?", () => abrirCodigo("bolsa-familia-calendario", "Quando cai o pagamento?")],
+      ["Golpes", () => abrirCodigo("golpes-cuidados", "Golpes")],
+    ]);
   }
 
-  function passo2() {
-    mostrarPasso(2);
-    mensagem("cadu", "Você já está no CadÚnico?");
-    opcoes(["Sim", "Ainda não", "Não sei"], function (r) {
-      mensagem("voce", r);
-      perfil.cadastrado = r;
-      CadU.salvarPerfil(perfil);
-      if (r === "Sim") passo3(); else passo4SemCadastro(r);
-    });
-  }
-
-  function passo3() {
-    mostrarPasso(3);
-    mensagem("cadu", "Quais benefícios você recebe? Marque e toque em Confirmar.");
-    $opcoes.replaceChildren();
-    const marcados = new Set();
-    BENEFICIOS.forEach(function (nome) {
-      const b = document.createElement("button");
-      b.type = "button";
-      b.className = "rounded-xl bg-white border-2 border-emerald-600 px-5 py-3 font-bold text-emerald-800";
-      b.textContent = nome;
-      b.setAttribute("aria-pressed", "false");
-      b.addEventListener("click", function () {
-        if (marcados.has(nome)) { marcados.delete(nome); b.setAttribute("aria-pressed", "false"); b.classList.remove("bg-emerald-600", "text-white"); }
-        else { marcados.add(nome); b.setAttribute("aria-pressed", "true"); b.classList.add("bg-emerald-600", "text-white"); }
-      });
-      $opcoes.appendChild(b);
-    });
-    const ok = document.createElement("button");
-    ok.type = "button";
-    ok.className = "rounded-xl bg-emerald-600 px-6 py-3 font-bold text-white";
-    ok.textContent = "Confirmar";
-    ok.addEventListener("click", function () {
-      const lista = Array.from(marcados).filter(n => n !== "Nenhum ainda");
-      perfil.beneficios = lista;
-      perfil.etapa = "concluida";
-      CadU.salvarPerfil(perfil);
-      $opcoes.replaceChildren();
-      mensagem("voce", lista.length ? lista.join(", ") : "Nenhum ainda");
-      passo4(lista.length ? "Entendi, você tem " + lista.join(", ") + ". Com o que posso te ajudar?"
-                          : "Entendi. Com o que posso te ajudar?");
-    });
-    $opcoes.appendChild(ok);
-  }
-
-  // Quem não está (ou não sabe) vai direto ao chat, que pergunta o que a pessoa quer.
-  function passo4SemCadastro(r) {
-    perfil.etapa = "concluida";
-    CadU.salvarPerfil(perfil);
-    abrirChat();
-    mensagem("cadu", "Tudo bem! Você quer entrar no CadÚnico ou tirar dúvidas?");
-    const lista = ["Quero entrar", "Tirar dúvidas"];
-    if (r === "Não sei") lista.push("Saber se já estou cadastrado");
-    opcoes(lista, function (esc) {
-      mensagem("voce", esc);
-      if (esc === "Tirar dúvidas") mensagem("cadu", "Pode escrever sua dúvida logo abaixo.");
-      else if (esc === "Quero entrar") perguntar("como fazer o cadastro no cadunico");
-      else perguntar("como saber se estou no cadunico");
-    });
-  }
-
-  function passo4(abertura) {
-    mostrarPasso(4);
-    abrirChat();
-    mensagem("cadu", abertura);
-  }
-
-  function abrirChat() {
-    mostrarPasso(4);
-    $form.classList.remove("hidden");
-    $form.classList.add("flex");
-    $aviso.classList.remove("hidden");
-    $recomecar.classList.remove("hidden");
-  }
-
-  // ---- conversa com a API ----
-  async function perguntar(texto) {
+  // ---------- conversa com o servidor ----------
+  async function chamar(url, opcoes) {
     try {
-      const r = await fetch("/api/chat", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ mensagem: texto }),
-      });
-      const dados = await r.json();
-      mensagem("cadu", dados.texto || dados.erro || "Não consegui responder agora.", dados);
+      const resp = await fetch(url, opcoes);
+      return await resp.json();
     } catch (e) {
-      mensagem("cadu", "Estou sem conexão agora. Tente de novo ou ligue 121.");
+      return { erro: "Estou sem conexão agora. Tente de novo ou ligue 121." };
     }
+  }
+
+  function mostrarResposta(r) {
+    if (r.tipo === "encontrada") { falaOrientacao(r); return; }
+    if (r.erro) { falaCadu(r.erro); return; }
+    falaCadu(r.mensagem);
+    if (r.tipo === "nao_encontrei") {
+      sugestoes((r.categorias || []).map((c, i) => [c, () => { location.href = "/beneficios#cat-" + (i + 1); }]));
+    }
+  }
+
+  async function perguntar(texto) {
+    const r = await chamar("/api/chat", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ mensagem: texto }),
+    });
+    mostrarResposta(r);
+  }
+
+  async function abrirCodigo(codigo, comoPergunta) {
+    if (comoPergunta) falaVoce(comoPergunta);
+    if (!/^[a-z0-9-]{1,60}$/.test(codigo)) { falaCadu("Não achei esse assunto."); return; }
+    const r = await chamar("/api/orientacao/" + codigo);
+    mostrarResposta(r.erro ? { erro: "Ainda não tenho esse assunto. Ligue 121 ou procure o CRAS." } : r);
   }
 
   $form.addEventListener("submit", function (e) {
     e.preventDefault();
     const texto = $campo.value.trim();
-    if (!texto) return;
-    mensagem("voce", texto);
+    if (!texto) { $campo.focus(); return; }
+    falaVoce(texto);
     $campo.value = "";
+    $sug.replaceChildren();
     perguntar(texto);
   });
 
-  $recomecar.addEventListener("click", function () {
-    if (!confirm("Apagar suas respostas deste aparelho e recomeçar?")) return;
-    CadU.apagarDados();
-    location.reload();
+  // ---------- microfone (voz do navegador; provisório até a voz própria) ----------
+  const Reconhecer = window.SpeechRecognition || window.webkitSpeechRecognition;
+  $mic.addEventListener("click", function () {
+    if (!Reconhecer) {
+      falaCadu("Seu navegador ainda não deixa falar comigo por voz. Escreva sua dúvida, por favor.");
+      return;
+    }
+    const rec = new Reconhecer();
+    rec.lang = "pt-BR";
+    rec.interimResults = false;
+    $mic.classList.add("animate-pulse", "ring-4", "ring-cadu");
+    rec.onresult = function (ev) {
+      const texto = ev.results[0][0].transcript;
+      $campo.value = texto.slice(0, 300);
+      $form.requestSubmit();
+    };
+    rec.onerror = function (ev) {
+      falaCadu(ev.error === "not-allowed" || ev.error === "service-not-allowed"
+        ? "Preciso da sua permissão para usar o microfone. Libere no navegador ou escreva sua dúvida."
+        : "Não consegui ouvir. Tente de novo ou escreva.");
+    };
+    rec.onend = () => $mic.classList.remove("animate-pulse", "ring-4", "ring-cadu");
+    rec.start();
   });
 
-  // ---- início ----
-  if (perfil.etapa === "concluida") {
-    const tem = (perfil.beneficios || []).length ? "Você tem " + perfil.beneficios.join(", ") + ". " : "";
-    passo4("Oi de novo! " + tem + "Com o que posso te ajudar?");
+  document.getElementById("recomecar").addEventListener("click", function () {
+    if (!confirm("Apagar suas respostas deste aparelho e recomeçar?")) return;
+    CadU.apagarDados();
+    location.href = "/triagem";
+  });
+
+  // ---------- abertura (passo 4 da triagem) ----------
+  const tem = (perfil.beneficios || []);
+  if (perfil.cadastrado === "Sim") {
+    falaCadu(tem.length ? "Entendi, você tem " + tem.join(", ") + ". Com o que posso te ajudar?"
+                        : "Entendi. Com o que posso te ajudar?");
+    sugestoesPadrao();
+  } else if (perfil.cadastrado === "Ainda não" || perfil.cadastrado === "Não sei") {
+    falaCadu("Você quer entrar no CadÚnico ou tirar dúvidas?");
+    const lista = [
+      ["Quero entrar", () => abrirCodigo("cadunico-como-fazer", "Quero entrar")],
+      ["Tirar dúvidas", () => { falaVoce("Tirar dúvidas"); falaCadu("Pode escrever sua dúvida aqui embaixo, ou tocar no microfone para falar."); sugestoesPadrao(); }],
+    ];
+    if (perfil.cadastrado === "Não sei") {
+      lista.splice(1, 0, ["Saber se já estou cadastrado", () => abrirCodigo("cadunico-estou-no-cadastro", "Saber se já estou cadastrado")]);
+    }
+    sugestoes(lista);
   } else {
-    passo1();
+    falaCadu("Oi, eu sou o CadU! Com o que posso te ajudar?");
+    sugestoesPadrao();
   }
+
+  // Atalho vindo de outra tela: /cadu?abrir=codigo
+  if (abrir) abrirCodigo(abrir);
 })();

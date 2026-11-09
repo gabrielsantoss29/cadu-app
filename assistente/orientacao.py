@@ -32,6 +32,8 @@ class Orientacao:
         self.renovacao = dados.get("renovacao", "")
         self.se_bloquear = dados.get("se_acabar_ou_bloquear", "")
         self.conferido_por_humano = dados.get("conferido_por_humano", False)
+        self.codigo = dados.get("codigo", str(self.id))     # nome curto usado pelo app
+        self.pode_combinar = dados.get("pode_combinar", [])  # códigos que podem ser recebidos juntos
 
     def texto(self) -> str:
         """Monta o texto da orientação (usado no terminal e no app)."""
@@ -61,7 +63,8 @@ class Orientacao:
     def para_dict(self) -> dict:
         """Versão em dicionário, para o app web devolver em JSON."""
         return {
-            "id": self.id, "categoria": self.categoria, "titulo": self.titulo,
+            "id": self.id, "codigo": self.codigo, "pode_combinar": self.pode_combinar,
+            "categoria": self.categoria, "titulo": self.titulo,
             "resposta": self.resposta, "quem_pode": self.quem_pode,
             "como_pedir": self.como_pedir, "documentos": self.documentos,
             "onde": self.onde, "renovacao": self.renovacao, "se_bloquear": self.se_bloquear,
