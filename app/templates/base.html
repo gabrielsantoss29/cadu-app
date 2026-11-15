@@ -12,6 +12,7 @@
   <script>
     tailwind.config = {
       theme: {
+        screens: { md: "99999px" },   // sem layout de computador: sempre a telinha de celular
         extend: {
           colors: {
             cadu: {
@@ -36,28 +37,14 @@
     :focus-visible { outline: 3px solid #F5B72E; outline-offset: 2px; }
     /* O atributo hidden precisa vencer classes como "flex" do Tailwind */
     [hidden] { display: none !important; }
+    /* No computador o app aparece como uma telinha de celular, no centro */
+    body { background: #DCE6F7; }
+    .tela { max-width: 430px; margin: 0 auto; min-height: 100dvh; background: #F6F9FF; position: relative; box-shadow: 0 0 48px rgba(18,64,138,.25); }
   </style>
 </head>
 <body class="bg-cadu-fundo text-cadu-texto leading-relaxed">
 
-  <!-- Menu lateral (computador) -->
-  <aside class="hidden md:flex fixed inset-y-0 left-0 w-64 flex-col gap-2 bg-cadu-escuro p-4 text-white">
-    <a href="/" class="mb-6 flex items-center gap-3 rounded-xl px-2 py-2">
-      <img src="{{ url_for('static', filename='mascote.svg') }}" alt="" class="h-12 w-12 rounded-full bg-white">
-      <span class="text-3xl font-extrabold tracking-tight">Cad<span class="text-cadu-amarelo">U</span></span>
-    </a>
-    {% for url, nome, ic, chave in abas %}
-    <a href="{{ url }}" {% if chave == aba %}aria-current="page"{% endif %}
-       class="flex min-h-toque items-center gap-3 rounded-xl px-4 py-3 text-lg font-semibold
-       {{ 'bg-white text-cadu-escuro' if chave == aba else 'text-white hover:bg-cadu' }}">
-      {{ icone(ic) }}{{ nome }}
-    </a>
-    {% endfor %}
-    <p class="mt-auto rounded-xl bg-cadu p-3 text-base">
-      O CadU <strong>não é canal oficial</strong> do governo.
-    </p>
-  </aside>
-
+  <div class="tela">
   <!-- Barra de cima (celular). No chat ela some: o chat tem o próprio cabeçalho. -->
   {% block barra_cima %}
   <header class="md:hidden sticky top-0 z-20 flex items-center gap-3 bg-cadu-escuro px-4 py-2 text-white">
@@ -67,7 +54,7 @@
   </header>
   {% endblock %}
 
-  <main class="md:ml-64 {% block largura_main %}px-4 py-6 pb-40 md:pb-12 max-w-3xl md:mx-auto md:px-8{% endblock %}">
+  <main class="{% block largura_main %}px-4 py-6 pb-40{% endblock %}">
     {% if base_rascunho and aba not in ('cadu', 'triagem') %}
     <p class="mb-5 flex items-start gap-2 rounded-xl border border-cadu-amarelo bg-amber-50 p-3 text-base">
       {{ icone('alerta', 'h-6 w-6 text-amber-600') }}
@@ -76,19 +63,23 @@
     {% endif %}
     {% block conteudo %}{% endblock %}
   </main>
+  </div>
 
   <!-- Botão redondo do CadU, em todas as telas (menos no chat e na triagem) -->
   {% if aba not in ('cadu', 'triagem') %}
-  <a href="/cadu" aria-label="Falar com o CadU"
-     class="fixed right-4 bottom-24 md:bottom-8 md:right-8 z-30 flex items-center gap-2 rounded-full bg-cadu p-1.5 text-white shadow-xl ring-4 ring-white hover:bg-cadu-escuro md:pr-5">
-    <img src="{{ url_for('static', filename='mascote.svg') }}" alt="" class="h-16 w-16 rounded-full bg-white">
-    <span class="hidden md:inline text-lg font-bold">Fale com o CadU</span>
-  </a>
+  <div class="pointer-events-none fixed inset-x-0 bottom-24 z-30">
+    <div class="mx-auto flex max-w-[430px] justify-end px-4">
+      <a href="/cadu" aria-label="Falar com o CadU"
+         class="pointer-events-auto flex items-center rounded-full bg-cadu p-1.5 text-white shadow-xl ring-4 ring-white hover:bg-cadu-escuro">
+        <img src="{{ url_for('static', filename='mascote.svg') }}" alt="" class="h-16 w-16 rounded-full bg-white">
+      </a>
+    </div>
+  </div>
   {% endif %}
 
   <!-- Barra inferior (celular) -->
   {% block barra_inferior %}
-  <nav class="md:hidden fixed bottom-0 inset-x-0 z-20 grid grid-cols-5 border-t border-cadu-claro bg-white" aria-label="Menu">
+  <nav class="fixed bottom-0 left-1/2 z-20 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-5 border-t border-cadu-claro bg-white" aria-label="Menu">
     {% for url, nome, ic, chave in abas %}
     <a href="{{ url }}" {% if chave == aba %}aria-current="page"{% endif %}
        class="flex min-h-[64px] flex-col items-center justify-center gap-0.5 text-base font-semibold

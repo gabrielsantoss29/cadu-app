@@ -60,7 +60,7 @@ def contexto_comum():
 @app.after_request
 def cabecalhos(resp):
     resp.headers["X-Content-Type-Options"] = "nosniff"
-    resp.headers["Referrer-Policy"] = "no-referrer"
+    resp.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     resp.headers["X-Frame-Options"] = "DENY"
     if request.path.startswith("/api/"):
         resp.headers["Cache-Control"] = "no-store"

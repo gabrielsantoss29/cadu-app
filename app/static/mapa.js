@@ -4,7 +4,8 @@
   const LIMITE_KM = 45; // mais longe que isso, a pessoa não está em São Paulo
   const mapa = L.map("mapa").setView(CENTRO_SP, 10);
   L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {
-    maxZoom: 18, attribution: "© OpenStreetMap"
+    maxZoom: 18, attribution: "© OpenStreetMap",
+    referrerPolicy: "strict-origin-when-cross-origin"
   }).addTo(mapa);
 
   const $lista = document.getElementById("lista");
