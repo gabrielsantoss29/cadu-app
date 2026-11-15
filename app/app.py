@@ -24,6 +24,7 @@ from assistente import Assistente  # noqa: E402
 from base_conhecimento import BaseConhecimento  # noqa: E402
 
 CAMINHO_BASE = os.environ.get("CADU_BASE", str(RAIZ / "assistente" / "data" / "base_conhecimento.json"))
+CAMINHO_POSTOS = RAIZ / "dados" / "cras_sp.json"
 CAMINHO_ENERGIA = RAIZ / "energia" / "aparelhos_provisorio.json"
 
 app = Flask(__name__)
@@ -35,6 +36,7 @@ if not base.carregar():
 # Sem caminho_historico: o servidor não grava o que as pessoas digitam.
 assistente = Assistente("CadU", base)
 energia = json.loads(CAMINHO_ENERGIA.read_text(encoding="utf-8"))
+postos = json.loads(CAMINHO_POSTOS.read_text(encoding="utf-8"))
 
 # Abas do menu: (endereço, nome, ícone, chave da aba)
 ABAS = [
@@ -89,6 +91,12 @@ def pagina_energia():
 @app.get("/cadu")
 def cadu():
     return render_template("cadu.html", aba="cadu")
+
+
+@app.get("/mapa")
+def mapa():
+    return render_template("mapa.html", aba="mais", postos=postos["itens"],
+                           fonte=postos["fonte"], baixado_em=postos["baixado_em"])
 
 
 @app.get("/mais")

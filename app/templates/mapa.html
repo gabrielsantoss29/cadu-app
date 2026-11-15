@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+{% block titulo %}Mapa{% endblock %}
+{% block conteudo %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.css">
+<h1 class="flex items-center gap-3 text-3xl font-extrabold">{{ icone('local', 'h-8 w-8 text-cadu') }} CRAS perto de você</h1>
+<p class="mt-2">O CRAS faz o Cadastro Único e ajuda de graça. Este mapa mostra os da <strong>cidade de São Paulo</strong>.</p>
+
+<section class="mt-4 rounded-2xl border border-cadu-claro bg-white p-4">
+  <button id="usar-local" class="min-h-toque inline-flex w-full items-center justify-center gap-2 rounded-xl bg-cadu px-5 py-3 text-lg font-bold text-white">{{ icone('local') }} Usar minha localização</button>
+  <p class="mt-1 text-sm text-slate-600">Sua posição fica só no seu aparelho. Não enviamos para ninguém.</p>
+  <label for="cep" class="mt-4 block text-lg font-bold">Ou digite seu CEP</label>
+  <div class="mt-1 flex gap-2">
+    <input id="cep" inputmode="numeric" maxlength="9" placeholder="00000-000" class="min-h-toque w-full rounded-xl border-2 border-cadu-claro px-4 text-xl focus:border-cadu focus:outline-none">
+    <button id="buscar-cep" class="min-h-toque rounded-xl bg-cadu-claro px-5 text-lg font-bold text-cadu-escuro">Buscar</button>
+  </div>
+  <p class="mt-1 text-sm text-slate-600">O CEP é usado só para achar o ponto no mapa, não é guardado.</p>
+  <p id="aviso-mapa" class="mt-3 font-semibold text-red-700" role="alert" hidden></p>
+</section>
+
+<div id="mapa" class="mt-4 h-72 w-full rounded-2xl border border-cadu-claro md:h-96" role="application" aria-label="Mapa dos CRAS de São Paulo"></div>
+
+<h2 id="titulo-lista" class="mt-6 mb-3 text-2xl font-bold">CRAS</h2>
+<ul id="lista" class="grid gap-3"></ul>
+
+<p class="mt-5 rounded-xl bg-amber-50 p-3 text-base">Antes de ir, <strong>confirme o endereço e o horário</strong> pelo 121 ou no site da prefeitura. Dados: {{ fonte }} ({{ baixado_em }}).</p>
+{% endblock %}
+{% block scripts %}
+<script src="https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.9.4/leaflet.min.js"></script>
+<script>const POSTOS = {{ postos | tojson }};</script>
+<script src="{{ url_for('static', filename='mapa.js') }}"></script>
+{% endblock %}
