@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% block titulo %}Início{% endblock %}
+{% block conteudo %}
+<section class="flex items-center gap-4 rounded-3xl bg-cadu p-5 text-white">
+  <img src="{{ url_for('static', filename='mascote.svg') }}" alt="" class="h-24 w-24 shrink-0 rounded-full bg-white">
+  <div>
+    <h1 class="text-3xl font-extrabold">Oi! Eu sou o Cad<span class="text-cadu-amarelo">U</span>.</h1>
+    <p id="texto-inicio" class="mt-1 text-lg">Explico seus benefícios em palavras simples e te ajudo quando dá problema.</p>
+  </div>
+</section>
+<button data-ouvir="#texto-inicio" class="mt-2 min-h-toque inline-flex items-center gap-2 rounded-xl px-4 py-2 text-lg font-semibold text-cadu-escuro hover:bg-cadu-claro">{{ icone('ouvir') }} Ouvir</button>
+
+<!-- Aparece só se a pessoa ainda não fez as perguntinhas (triagem) -->
+<a id="cartao-triagem" href="/triagem" hidden
+   class="mt-4 flex min-h-toque items-center gap-4 rounded-2xl border-2 border-cadu-amarelo bg-amber-50 p-5 text-xl font-bold hover:bg-amber-100">
+  {{ icone('pergunta', 'h-8 w-8 text-amber-600') }}
+  <span>Começar: responda 2 perguntinhas para eu te ajudar melhor</span>
+  {{ icone('seta-direita', 'ml-auto h-7 w-7') }}
+</a>
+
+<h2 class="mt-6 mb-3 text-2xl font-bold">O que você precisa?</h2>
+<div class="grid grid-cols-2 gap-3">
+  {% set atalhos = [
+    ("/cadu", "conversa", "Tirar dúvida com o CadU", "bg-cadu text-white"),
+    ("/beneficios", "presente", "Ver benefícios", "bg-white"),
+    ("/cadu?abrir=bolsa-familia-bloqueio-cancelamento", "alerta", "Meu benefício bloqueou", "bg-white"),
+    ("/cadu?abrir=cadunico-atualizar", "refazer", "Atualizar o cadastro", "bg-white"),
+    ("/energia", "raio", "Calcular conta de luz", "bg-white"),
+    ("/mais#atendimento", "telefone", "Falar com atendimento", "bg-white"),
+  ] %}
+  {% for url, ic, nome, cor in atalhos %}
+  <a href="{{ url }}" class="flex min-h-[120px] flex-col justify-between gap-3 rounded-2xl border border-cadu-claro p-4 text-xl font-bold shadow-sm hover:ring-2 hover:ring-cadu {{ cor }}">
+    <span class="flex h-12 w-12 items-center justify-center rounded-xl {{ 'bg-white/20' if 'text-white' in cor else 'bg-cadu-claro text-cadu' }}">{{ icone(ic, 'h-7 w-7') }}</span>
+    {{ nome }}
+  </a>
+  {% endfor %}
+</div>
+
+<section class="mt-6 rounded-2xl border border-cadu-claro bg-white p-5">
+  <h2 class="flex items-center gap-2 text-xl font-bold">{{ icone('documento', 'h-6 w-6 text-cadu') }} Quer ver seu cadastro pelo CPF?</h2>
+  <p class="mt-2">Isso é feito no <strong>aplicativo oficial do Cadastro Único</strong>, no telefone <strong>121</strong> ou no <strong>CRAS</strong>. O CadU não consulta dados de ninguém.</p>
+  <a href="/cadu?abrir=cadunico-app-oficial" class="mt-3 min-h-toque inline-flex items-center gap-2 rounded-xl bg-cadu-claro px-4 py-2 font-semibold text-cadu-escuro">O que o app oficial faz {{ icone('seta-direita', 'h-5 w-5') }}</a>
+</section>
+
+<p class="mt-6 text-base text-slate-600">
+  O CadU é gratuito e <strong>não é um canal oficial</strong> do governo. Não pedimos nome, CPF nem renda.
+</p>
+{% endblock %}
+{% block scripts %}
+<script>
+  // Mostra o convite da triagem só para quem ainda não respondeu
+  if (CadU.lerPerfil().etapa !== "concluida") document.getElementById("cartao-triagem").hidden = false;
+</script>
+{% endblock %}

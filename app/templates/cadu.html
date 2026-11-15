@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block titulo %}Conversa{% endblock %}
+{# Chat ocupa a altura da tela: no celular, desconta a barra de baixo (65px). #}
+{% block barra_cima %}{% endblock %}
+{% block largura_main %}flex h-[calc(100dvh-65px)] flex-col md:h-dvh{% endblock %}
+{% block conteudo %}
+<!-- Cabeçalho do chat, estilo WhatsApp -->
+<div class="flex items-center gap-3 bg-cadu px-4 py-3 text-white">
+  <img src="{{ url_for('static', filename='mascote.svg') }}" alt="" class="h-12 w-12 rounded-full bg-white">
+  <div class="flex-1 leading-tight">
+    <p class="text-xl font-bold">Cad<span class="text-cadu-amarelo">U</span></p>
+    <p class="text-base opacity-90">Responde pela base oficial · não é canal oficial</p>
+  </div>
+  <button id="recomecar" class="min-h-toque inline-flex items-center gap-2 rounded-xl px-3 text-base font-semibold hover:bg-cadu-escuro" title="Apagar meus dados e recomeçar">
+    {{ icone('refazer') }}<span class="hidden sm:inline">Recomeçar</span>
+  </button>
+</div>
+
+<!-- Mensagens: criadas pelo chat.js sempre com textContent (o HTML digitado não é interpretado) -->
+<div id="mensagens" class="flex-1 space-y-3 overflow-y-auto bg-[#EAF1FC] px-3 py-4 md:px-8" aria-live="polite"></div>
+
+<!-- Sugestões (botões rápidos) -->
+<div id="sugestoes" class="flex gap-2 overflow-x-auto bg-[#EAF1FC] px-3 pb-2 md:px-8"></div>
+
+<!-- Barra de digitar -->
+<form id="form-chat" class="flex items-center gap-2 border-t border-cadu-claro bg-white px-3 py-2 md:px-8" autocomplete="off">
+  <label for="campo" class="sr-only">Sua dúvida</label>
+  <input id="campo" type="text" maxlength="300" placeholder="Escreva sua dúvida"
+         class="min-h-[56px] min-w-0 flex-1 rounded-full border-2 border-cadu-claro bg-cadu-fundo px-5 text-lg focus:border-cadu focus:outline-none">
+  <button id="enviar" type="submit" aria-label="Enviar"
+          class="flex h-14 w-14 shrink-0 items-center justify-center rounded-full bg-cadu text-white hover:bg-cadu-escuro">
+    <svg class="h-7 w-7" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m22 2-7 20-4-9-9-4Z"/><path d="M22 2 11 13"/></svg>
+  </button>
+  <button id="microfone" type="button" aria-label="Falar (microfone)"
+          class="flex h-16 w-16 shrink-0 items-center justify-center rounded-full bg-cadu-amarelo text-cadu-texto shadow-md hover:brightness-95">
+    <svg class="h-8 w-8" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3Z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><path d="M12 19v3"/></svg>
+  </button>
+</form>
+<p class="bg-white px-4 pb-2 text-base text-slate-600 md:px-8">Não escreva CPF, telefone nem e-mail. Eu não preciso deles.</p>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='chat.js') }}"></script>
+{% endblock %}

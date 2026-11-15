@@ -1,0 +1,74 @@
+{% extends "base.html" %}
+{% block titulo %}Perguntinhas{% endblock %}
+{% block barra_inferior %}{% endblock %}
+{% block conteudo %}
+<!-- Triagem: UMA pergunta por tela. O JavaScript (triagem.js) mostra uma <section> de cada vez. -->
+<div class="mb-6">
+  <div class="flex items-center justify-between text-base font-semibold text-cadu-escuro">
+    <span id="passo-texto">Passo 1 de 4</span>
+    <a href="/cadu" id="pular" class="min-h-toque inline-flex items-center px-3 underline">Pular</a>
+  </div>
+  <div class="mt-2 h-3 w-full rounded-full bg-cadu-claro" role="progressbar" aria-valuemin="1" aria-valuemax="4" aria-valuenow="1" id="barra">
+    <div id="barra-cheia" class="h-3 rounded-full bg-cadu transition-all" style="width:25%"></div>
+  </div>
+</div>
+
+<!-- Passo 1: abertura -->
+<section data-passo="1" class="text-center">
+  <img src="{{ url_for('static', filename='mascote.svg') }}" alt="CadU" class="mx-auto h-40 w-40">
+  <p id="t1" class="mx-auto mt-4 max-w-md rounded-2xl bg-white p-5 text-2xl font-semibold shadow-sm">
+    Oi, eu sou o CadU! Vou te fazer umas perguntinhas. Não sei quem você é e não guardo nome, CPF nem renda.
+  </p>
+  <div class="mt-6 flex flex-col items-center gap-3">
+    <button data-ir="2" class="min-h-toque w-full max-w-sm rounded-2xl bg-cadu px-6 py-4 text-2xl font-bold text-white hover:bg-cadu-escuro">Vamos lá</button>
+    <button data-ouvir="#t1" class="min-h-toque inline-flex items-center gap-2 rounded-xl px-5 py-3 text-lg font-semibold text-cadu-escuro hover:bg-cadu-claro">{{ icone('ouvir') }} Ouvir</button>
+  </div>
+</section>
+
+<!-- Passo 2: já está no CadÚnico? -->
+<section data-passo="2" hidden>
+  <div class="flex items-start gap-3">
+    <img src="{{ url_for('static', filename='mascote.svg') }}" alt="" class="h-16 w-16">
+    <h1 id="t2" class="rounded-2xl bg-white p-4 text-2xl font-bold shadow-sm">Você já está no CadÚnico?</h1>
+  </div>
+  <button data-ouvir="#t2" class="mt-2 min-h-toque inline-flex items-center gap-2 rounded-xl px-4 py-2 text-lg font-semibold text-cadu-escuro hover:bg-cadu-claro">{{ icone('ouvir') }} Ouvir</button>
+  <div class="mt-4 grid gap-3">
+    <button data-cadastrado="Sim" class="min-h-toque flex items-center gap-4 rounded-2xl border-2 border-cadu bg-white p-5 text-2xl font-bold hover:bg-cadu-claro">
+      <span class="flex h-12 w-12 items-center justify-center rounded-full bg-green-600 text-white">{{ icone('check', 'h-7 w-7') }}</span>Sim
+    </button>
+    <button data-cadastrado="Ainda não" class="min-h-toque flex items-center gap-4 rounded-2xl border-2 border-cadu bg-white p-5 text-2xl font-bold hover:bg-cadu-claro">
+      <span class="flex h-12 w-12 items-center justify-center rounded-full bg-cadu text-white">{{ icone('x', 'h-7 w-7') }}</span>Ainda não
+    </button>
+    <button data-cadastrado="Não sei" class="min-h-toque flex items-center gap-4 rounded-2xl border-2 border-cadu bg-white p-5 text-2xl font-bold hover:bg-cadu-claro">
+      <span class="flex h-12 w-12 items-center justify-center rounded-full bg-cadu-amarelo text-cadu-texto">{{ icone('pergunta', 'h-7 w-7') }}</span>Não sei
+    </button>
+  </div>
+  <button data-ir="1" class="mt-6 min-h-toque inline-flex items-center gap-2 text-lg font-semibold text-cadu-escuro">{{ icone('seta-esquerda') }} Voltar</button>
+</section>
+
+<!-- Passo 3: quais benefícios recebe (só para quem disse Sim) -->
+<section data-passo="3" hidden>
+  <div class="flex items-start gap-3">
+    <img src="{{ url_for('static', filename='mascote.svg') }}" alt="" class="h-16 w-16">
+    <h1 id="t3" class="rounded-2xl bg-white p-4 text-2xl font-bold shadow-sm">Quais benefícios você recebe? Pode marcar mais de um.</h1>
+  </div>
+  <button data-ouvir="#t3" class="mt-2 min-h-toque inline-flex items-center gap-2 rounded-xl px-4 py-2 text-lg font-semibold text-cadu-escuro hover:bg-cadu-claro">{{ icone('ouvir') }} Ouvir</button>
+  <div id="lista-beneficios" class="mt-4 grid gap-3 sm:grid-cols-2">
+    {% for nome in ["Bolsa Família", "Pé-de-Meia", "Tarifa Social", "BPC", "Gás do Povo", "Outro"] %}
+    <label class="flex min-h-toque cursor-pointer items-center gap-4 rounded-2xl border-2 border-cadu-claro bg-white p-4 text-xl font-bold has-[:checked]:border-cadu has-[:checked]:bg-cadu-claro">
+      <input type="checkbox" value="{{ nome }}" class="h-7 w-7 accent-[#1B5FC1]"> {{ nome }}
+    </label>
+    {% endfor %}
+    <label class="flex min-h-toque cursor-pointer items-center gap-4 rounded-2xl border-2 border-cadu-claro bg-white p-4 text-xl font-bold has-[:checked]:border-cadu has-[:checked]:bg-cadu-claro">
+      <input type="checkbox" value="Nenhum" id="nenhum" class="h-7 w-7 accent-[#1B5FC1]"> Nenhum ainda
+    </label>
+  </div>
+  <button id="confirmar" class="mt-6 min-h-toque w-full rounded-2xl bg-cadu px-6 py-4 text-2xl font-bold text-white hover:bg-cadu-escuro">Continuar</button>
+  <button data-ir="2" class="mt-4 min-h-toque inline-flex items-center gap-2 text-lg font-semibold text-cadu-escuro">{{ icone('seta-esquerda') }} Voltar</button>
+</section>
+
+<p class="mt-10 flex items-center gap-2 text-base text-slate-600">{{ icone('cadeado', 'h-5 w-5') }} Suas respostas ficam só neste aparelho. Nunca pergunto renda.</p>
+{% endblock %}
+{% block scripts %}
+<script src="{{ url_for('static', filename='triagem.js') }}"></script>
+{% endblock %}

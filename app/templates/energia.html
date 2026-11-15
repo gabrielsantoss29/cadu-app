@@ -1,0 +1,70 @@
+{% extends "base.html" %}
+{% block titulo %}Energia{% endblock %}
+{% block conteudo %}
+<h1 class="flex items-center gap-3 text-3xl font-extrabold">{{ icone('raio', 'h-8 w-8 text-cadu') }} Conta de luz</h1>
+<p class="mt-2">Marque os aparelhos da sua casa e quantas horas por dia ficam ligados. Eu calculo quanto gasta por mês.</p>
+{% if energia.provisorio %}
+<p class="mt-3 rounded-xl bg-amber-50 p-3 text-base"><strong>Valores provisórios</strong> (média aproximada). A conta real depende do aparelho e da sua distribuidora.</p>
+{% endif %}
+
+<section class="mt-5 rounded-2xl border border-cadu-claro bg-white p-4">
+  <label for="tarifa" class="block text-lg font-bold">Preço do kWh (R$)</label>
+  <p class="text-base text-slate-600">Está na sua conta de luz. Pode mudar.</p>
+  <input id="tarifa" type="number" inputmode="decimal" min="0.01" max="10" step="0.01"
+         value="{{ '%.2f'|format(energia.tarifa_kwh_padrao) }}"
+         class="mt-2 min-h-toque w-40 rounded-xl border-2 border-cadu-claro px-4 text-xl focus:border-cadu focus:outline-none">
+</section>
+
+<h2 class="mt-6 mb-3 text-2xl font-bold">Aparelhos</h2>
+<div id="aparelhos" class="grid gap-3">
+  {% for a in energia.aparelhos %}
+  <div class="aparelho rounded-2xl border-2 border-cadu-claro bg-white p-4 has-[:checked]:border-cadu" data-potencia="{{ a.potencia_w }}">
+    <label class="flex min-h-toque cursor-pointer items-center gap-3 text-xl font-bold">
+      <input type="checkbox" class="usar h-7 w-7 accent-[#1B5FC1]">
+      <span aria-hidden="true" class="text-2xl">{{ a.icone }}</span> {{ a.nome }}
+      <span class="ml-auto text-base font-normal text-slate-500">{{ a.potencia_w }} W</span>
+    </label>
+    <div class="mt-3 flex flex-wrap items-center gap-4 text-lg">
+      <label class="flex items-center gap-2">Quantos:
+        <input type="number" class="qtd min-h-toque w-20 rounded-xl border-2 border-cadu-claro px-3 text-xl" min="1" max="20" value="1" inputmode="numeric">
+      </label>
+      <label class="flex items-center gap-2">Horas por dia:
+        <input type="number" class="horas min-h-toque w-24 rounded-xl border-2 border-cadu-claro px-3 text-xl" min="0" max="24" step="0.1" value="{{ a.horas_padrao }}" inputmode="decimal">
+      </label>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+
+<!-- Resultado (atualiza sozinho) -->
+<!-- pr-24 no celular: deixa espaço para o botão redondo do CadU -->
+<section id="resultado" class="sticky bottom-20 md:bottom-4 mt-6 rounded-2xl bg-cadu-escuro p-4 pr-24 text-white shadow-xl md:p-5 md:pr-56" aria-live="polite">
+  <div class="grid grid-cols-2 gap-x-4 md:flex md:gap-x-8">
+    <p><span class="block text-base opacity-90">Por mês</span><span id="kwh" class="text-2xl font-extrabold md:text-3xl">0 kWh</span></p>
+    <p><span class="block text-base opacity-90">Custo aproximado</span><span id="custo" class="text-2xl font-extrabold text-cadu-amarelo md:text-3xl">R$ 0,00</span></p>
+  </div>
+  <div class="mt-2 h-4 w-full overflow-hidden rounded-full bg-white/20">
+    <div id="barra-limite" class="h-4 rounded-full" style="width:0%; background-color:#16A34A"></div>
+  </div>
+  <p id="comparacao" class="mt-2 text-base"></p>
+</section>
+
+<section class="mt-6 rounded-2xl border border-cadu-claro bg-white p-5">
+  <h2 class="text-2xl font-bold">Dicas para economizar</h2>
+  <ul id="dicas" class="mt-2 ml-6 list-disc space-y-1">
+    {% for d in energia.dicas %}<li>{{ d }}</li>{% endfor %}
+  </ul>
+  <button data-ouvir="#dicas" class="mt-3 min-h-toque inline-flex items-center gap-2 rounded-xl bg-cadu px-4 py-2 font-semibold text-white">{{ icone('ouvir') }} Ouvir dicas</button>
+</section>
+
+<a href="/cadu?abrir=tarifa-social-energia" class="mt-6 flex min-h-toque items-center gap-3 rounded-2xl bg-cadu-claro p-4 text-lg font-bold text-cadu-escuro">
+  {{ icone('conversa') }} Desconto na conta de luz: Tarifa Social {{ icone('seta-direita', 'ml-auto h-6 w-6') }}
+</a>
+{% endblock %}
+{% block scripts %}
+<script>
+  // Limite de comparação vem de energia/aparelhos_provisorio.json (constante configurável).
+  const LIMITE_KWH = {{ energia.limite_kwh | tojson }};
+</script>
+<script src="{{ url_for('static', filename='energia.js') }}"></script>
+{% endblock %}
