@@ -66,6 +66,7 @@
     if (marcaVoce) marcaVoce.remove();
     marcaVoce = L.circleMarker(origem, { radius: 9, color: "#F5B72E", fillColor: "#F5B72E", fillOpacity: 0.9 }).addTo(mapa).bindPopup("Você");
     mostrar(origem);
+    mapa.invalidateSize();
     const perto = cras.map(p => [p.lat, p.lon]).sort((a, b) => km(origem, a) - km(origem, b)).slice(0, 3);
     mapa.fitBounds(L.latLngBounds([origem].concat(perto)).pad(0.3));
   }
@@ -96,5 +97,6 @@
   document.getElementById("buscar-cep").addEventListener("click", buscarCep);
   document.getElementById("cep").addEventListener("keydown", e => { if (e.key === "Enter") buscarCep(); });
 
+  window.addEventListener("resize", function () { mapa.invalidateSize(); });
   mostrar(null);
 })();
