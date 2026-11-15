@@ -21,6 +21,8 @@ RAIZ = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(RAIZ / "assistente"))
 
 from assistente import Assistente  # noqa: E402
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+import contadores  # noqa: E402
 from base_conhecimento import BaseConhecimento  # noqa: E402
 
 CAMINHO_BASE = os.environ.get("CADU_BASE", str(RAIZ / "assistente" / "data" / "base_conhecimento.json"))
@@ -139,6 +141,34 @@ def api_orientacao(codigo):
             return jsonify(tipo="encontrada", confianca="ALTA", pontos=None,
                            orientacao=o.para_dict(), alternativas=[])
     return jsonify(erro="Orientação não encontrada."), 404
+
+
+EVENTOS_FIXOS = {"triagem_concluida", "ajudou_sim", "ajudou_nao"}
+
+
+@app.post("/api/contar")
+def api_contar():
+    """Conta um evento anônimo. Só aceita nomes de uma lista fixa; nunca guarda texto livre."""
+    dados = request.get_json(silent=True)
+    if not isinstance(dados, dict):
+        return "", 400
+    evento, valor = dados.get("evento"), dados.get("valor")
+    if evento in EVENTOS_FIXOS:
+        chave = evento
+    elif evento == "assunto" and valor in base.categorias():
+        chave = "assunto:" + valor
+    elif evento == "beneficio" and any(o.codigo == valor for o in base.orientacoes):
+        chave = "beneficio:" + valor
+    else:
+        return "", 400
+    contadores.somar(chave)
+    return "", 204
+
+
+@app.get("/api/contadores")
+def api_contadores():
+    """Totais anônimos (só números). Vazio quando não há banco ligado."""
+    return jsonify(ativo=contadores.ativo(), totais=contadores.totais())
 
 
 @app.get("/api/saude")

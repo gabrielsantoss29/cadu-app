@@ -13,6 +13,14 @@ const CadU = {
     try { localStorage.removeItem(this.CHAVE); } catch (e) { /* nada a fazer */ }
   },
 
+  // Contador anônimo: manda só o nome do evento (de uma lista fixa), nunca texto digitado.
+  contar(evento, valor) {
+    try {
+      fetch("/api/contar", { method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ evento: evento, valor: valor }), keepalive: true });
+    } catch (e) { /* contar é opcional */ }
+  },
+
   // Botão "Ouvir": lê o texto em voz alta com a voz do navegador
   // (provisório; a voz própria do CadU virá depois).
   ouvir(texto) {

@@ -96,14 +96,16 @@
     }
     b.appendChild(el("p", "mt-1 text-base text-slate-600", "O CadU não é canal oficial."));
     b.appendChild(botaoOuvir(o.titulo + ". " + o.resposta));
+    CadU.contar("assunto", o.categoria);
     rolar();
 
     // Depois da resposta: alternativas e "isso ajudou?"
     const opcoes = [];
     (r.alternativas || []).forEach(alt =>
       opcoes.push(["Talvez seja: " + alt.titulo, () => abrirCodigo(alt.codigo, alt.titulo)]));
-    opcoes.push(["Ajudou", () => { falaVoce("Ajudou"); falaCadu("Que bom! Quer perguntar mais alguma coisa?"); sugestoesPadrao(); }]);
+    opcoes.push(["Ajudou", () => { CadU.contar("ajudou_sim"); falaVoce("Ajudou"); falaCadu("Que bom! Quer perguntar mais alguma coisa?"); sugestoesPadrao(); }]);
     opcoes.push(["Não ajudou", () => {
+      CadU.contar("ajudou_nao");
       falaVoce("Não ajudou");
       falaCadu("Tente escrever de outro jeito ou veja a aba Benefícios. Se preferir, ligue 121 ou procure o CRAS da sua cidade.");
       sugestoesPadrao();

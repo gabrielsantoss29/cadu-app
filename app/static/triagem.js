@@ -17,6 +17,7 @@
 
   function irParaChat() {
     perfil.etapa = "concluida";
+    CadU.contar("triagem_concluida");
     CadU.salvarPerfil(perfil);
     location.href = "/cadu";
   }

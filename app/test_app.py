@@ -9,7 +9,7 @@ class TestApp(unittest.TestCase):
         self.c = app.test_client()
 
     def test_paginas(self):
-        for url in ["/", "/triagem", "/beneficios", "/energia", "/cadu", "/mais"]:
+        for url in ["/", "/triagem", "/beneficios", "/energia", "/cadu", "/mais", "/mapa"]:
             r = self.c.get(url)
             self.assertEqual(r.status_code, 200, url)
             self.assertIn("não é canal oficial", r.get_data(as_text=True).lower(), url)
@@ -68,6 +68,22 @@ class TestApp(unittest.TestCase):
         # Jinja escapa: nenhum texto da base vira tag
         html = self.c.get("/beneficios").get_data(as_text=True)
         self.assertNotIn("<script>alert", html)
+
+    def test_contar_aceita_so_eventos_da_lista(self):
+        ok = lambda d: self.c.post("/api/contar", json=d).status_code
+        self.assertEqual(ok({"evento": "triagem_concluida"}), 204)
+        self.assertEqual(ok({"evento": "assunto", "valor": "Energia"}), 204)
+        self.assertEqual(ok({"evento": "assunto", "valor": "texto livre digitado"}), 400)
+        self.assertEqual(ok({"evento": "qualquer_coisa"}), 400)
+        self.assertEqual(self.c.post("/api/contar", data="x").status_code, 400)
+
+    def test_contadores_sem_banco_nao_quebra(self):
+        r = self.c.get("/api/contadores").get_json()
+        self.assertIn("totais", r)
+
+    def test_mapa_tem_postos_de_sao_paulo(self):
+        html = self.c.get("/mapa").get_data(as_text=True)
+        self.assertIn("CRAS", html)
 
 
 if __name__ == "__main__":
