@@ -23,9 +23,31 @@ const CadU = {
 
   // Botão "Ouvir": lê o texto em voz alta com a voz do navegador
   // (provisório; a voz própria do CadU virá depois).
-  ouvir(texto) {
+  // Primeiro tenta o áudio gravado com a voz do CadU (static/audio/<hash>.mp3, gerado por
+  // ferramentas/gerar_audios.py). Se não existir para esse texto, usa a voz do navegador.
+  async ouvir(texto) {
+    texto = String(texto).replace(/\s+/g, " ").trim();
+    this.parar();
+    try {
+      if (window.crypto && crypto.subtle) {
+        const h = await crypto.subtle.digest("SHA-1", new TextEncoder().encode(texto));
+        const nome = Array.from(new Uint8Array(h)).slice(0, 8).map(b => b.toString(16).padStart(2, "0")).join("");
+        const ok = await fetch("/static/audio/" + nome + ".mp3", { method: "HEAD" }).then(r => r.ok, () => false);
+        if (ok) {
+          this._audio = new Audio("/static/audio/" + nome + ".mp3");
+          await this._audio.play();
+          return;
+        }
+      }
+    } catch (e) { /* cai para a voz do navegador */ }
+    this.falarNoNavegador(texto);
+  },
+  parar() {
+    if (this._audio) { this._audio.pause(); this._audio = null; }
+    if ("speechSynthesis" in window) speechSynthesis.cancel();
+  },
+  falarNoNavegador(texto) {
     if (!("speechSynthesis" in window)) { alert("Seu aparelho não tem leitura em voz alta."); return; }
-    speechSynthesis.cancel();
     const fala = new SpeechSynthesisUtterance(texto);
     fala.lang = "pt-BR";
     fala.rate = 0.95;
