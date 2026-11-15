@@ -15,6 +15,17 @@
          class="mt-2 min-h-toque w-40 rounded-xl border-2 border-cadu-claro px-4 text-xl focus:border-cadu focus:outline-none">
 </section>
 
+<section class="mt-4 rounded-2xl border border-cadu-claro bg-white p-4">
+  <label for="regiao" class="block text-lg font-bold">Compare com a sua região</label>
+  <p class="text-base text-slate-600">Média de consumo de uma casa, por mês. É só uma referência, a sua casa pode ser diferente.</p>
+  <select id="regiao" class="mt-2 min-h-toque w-full rounded-xl border-2 border-cadu-claro bg-white px-4 text-xl focus:border-cadu focus:outline-none">
+    <option value="">Escolha a região</option>
+    {% for r, v in energia.media_regional.kwh_por_mes.items() %}<option value="{{ v }}">{{ r }}</option>{% endfor %}
+  </select>
+  <p id="media-regiao" class="mt-3 text-lg" aria-live="polite"></p>
+  <p class="mt-1 text-sm text-slate-500">Fonte: {{ energia.media_regional.fonte }}.</p>
+</section>
+
 <h2 class="mt-6 mb-3 text-2xl font-bold">Aparelhos</h2>
 <div id="aparelhos" class="grid gap-3">
   {% for a in energia.aparelhos %}

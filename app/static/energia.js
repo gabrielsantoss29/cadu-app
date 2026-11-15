@@ -22,6 +22,7 @@
       const horas = numero(ap.querySelector(".horas"), 0, 24);
       kwh += potencia * horas * DIAS * qtd / 1000;
     });
+    compararRegiao(kwh);
     const tarifa = numero($tarifa, 0, 10);
     document.getElementById("kwh").textContent = Math.round(kwh) + " kWh";
     // Preço vazio, errado ou zero: pede para conferir em vez de mostrar R$ 0,00
@@ -36,6 +37,17 @@
     document.getElementById("comparacao").textContent = kwh > LIMITE_KWH
       ? "Passou " + Math.round(kwh - LIMITE_KWH) + " kWh do limite de " + LIMITE_KWH + ". Veja as dicas."
       : "Dentro do limite de " + LIMITE_KWH + " kWh por mês.";
+  }
+
+  // Comparação com a média da região (dado da EPE, só como referência)
+  const $regiao = document.getElementById("regiao");
+  function compararRegiao(kwh) {
+    const alvo = document.getElementById("media-regiao");
+    const media = parseFloat($regiao.value);
+    if (!isFinite(media)) { alvo.textContent = ""; return; }
+    alvo.textContent = kwh > 0
+      ? "Média da região: " + Math.round(media) + " kWh por mês. A sua conta, pelos aparelhos marcados: " + Math.round(kwh) + " kWh."
+      : "Média da região: " + Math.round(media) + " kWh por mês.";
   }
 
   // Mexer em quantidade ou horas já marca o aparelho

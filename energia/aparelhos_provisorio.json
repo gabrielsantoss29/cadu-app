@@ -5,16 +5,76 @@
   "limite_kwh": 80,
   "limite_explicacao": "Limite de comparação (provisório). Pode ser mudado aqui.",
   "aparelhos": [
-    {"id": "chuveiro", "nome": "Chuveiro elétrico", "icone": "🚿", "potencia_w": 5500, "horas_padrao": 0.5},
-    {"id": "geladeira", "nome": "Geladeira", "icone": "🧊", "potencia_w": 150, "horas_padrao": 10},
-    {"id": "tv", "nome": "Televisão", "icone": "📺", "potencia_w": 100, "horas_padrao": 5},
-    {"id": "lampada", "nome": "Lâmpada LED", "icone": "💡", "potencia_w": 9, "horas_padrao": 6},
-    {"id": "ventilador", "nome": "Ventilador", "icone": "🌀", "potencia_w": 100, "horas_padrao": 8},
-    {"id": "ferro", "nome": "Ferro de passar", "icone": "👕", "potencia_w": 1000, "horas_padrao": 0.2},
-    {"id": "lavar", "nome": "Máquina de lavar", "icone": "🫧", "potencia_w": 500, "horas_padrao": 0.5},
-    {"id": "microondas", "nome": "Micro-ondas", "icone": "♨️", "potencia_w": 1200, "horas_padrao": 0.2},
-    {"id": "celular", "nome": "Carregador de celular", "icone": "📱", "potencia_w": 5, "horas_padrao": 3},
-    {"id": "computador", "nome": "Computador", "icone": "💻", "potencia_w": 200, "horas_padrao": 3}
+    {
+      "id": "chuveiro",
+      "nome": "Chuveiro elétrico",
+      "icone": "🚿",
+      "potencia_w": 5500,
+      "horas_padrao": 0.5
+    },
+    {
+      "id": "geladeira",
+      "nome": "Geladeira",
+      "icone": "🧊",
+      "potencia_w": 150,
+      "horas_padrao": 10
+    },
+    {
+      "id": "tv",
+      "nome": "Televisão",
+      "icone": "📺",
+      "potencia_w": 100,
+      "horas_padrao": 5
+    },
+    {
+      "id": "lampada",
+      "nome": "Lâmpada LED",
+      "icone": "💡",
+      "potencia_w": 9,
+      "horas_padrao": 6
+    },
+    {
+      "id": "ventilador",
+      "nome": "Ventilador",
+      "icone": "🌀",
+      "potencia_w": 100,
+      "horas_padrao": 8
+    },
+    {
+      "id": "ferro",
+      "nome": "Ferro de passar",
+      "icone": "👕",
+      "potencia_w": 1000,
+      "horas_padrao": 0.2
+    },
+    {
+      "id": "lavar",
+      "nome": "Máquina de lavar",
+      "icone": "🫧",
+      "potencia_w": 500,
+      "horas_padrao": 0.5
+    },
+    {
+      "id": "microondas",
+      "nome": "Micro-ondas",
+      "icone": "♨️",
+      "potencia_w": 1200,
+      "horas_padrao": 0.2
+    },
+    {
+      "id": "celular",
+      "nome": "Carregador de celular",
+      "icone": "📱",
+      "potencia_w": 5,
+      "horas_padrao": 3
+    },
+    {
+      "id": "computador",
+      "nome": "Computador",
+      "icone": "💻",
+      "potencia_w": 200,
+      "horas_padrao": 3
+    }
   ],
   "dicas": [
     "Banho mais curto e chuveiro na posição verão gastam menos.",
@@ -23,5 +83,15 @@
     "Desligue a TV e a luz quando sair do cômodo.",
     "Troque lâmpadas antigas por LED.",
     "Tire da tomada o carregador que não está sendo usado."
-  ]
+  ],
+  "media_regional": {
+    "fonte": "EPE, Dados Abertos do Consumo Mensal de Energia Elétrica, classe residencial cativa, média de 2023 a 2025 (relatório estatístico da equipe)",
+    "kwh_por_mes": {
+      "Norte": 213.08,
+      "Nordeste": 134.06,
+      "Centro-Oeste": 211.14,
+      "Sudeste": 182.48,
+      "Sul": 208.2
+    }
+  }
 }
