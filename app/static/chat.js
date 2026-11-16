@@ -79,18 +79,6 @@
     linhaInfo(det, "Se bloquear ou acabar", o.se_bloquear);
     b.appendChild(det);
 
-    // Fonte e data (o link só é criado se for http/https)
-    const fonte = el("p", "mt-3 text-base text-slate-600");
-    fonte.append("Fonte: ");
-    if (/^https?:\/\//.test(o.fonte)) {
-      const a = el("a", "inline-flex min-h-[48px] items-center underline text-cadu", o.fonte_nome || o.fonte);
-      a.href = o.fonte; a.target = "_blank"; a.rel = "noopener noreferrer";
-      fonte.appendChild(a);
-    } else {
-      fonte.append(o.fonte_nome || o.fonte);
-    }
-    fonte.append(" · conferido em " + o.verificado_em);
-    b.appendChild(fonte);
     b.appendChild(el("p", "mt-1 text-base text-slate-600", "O CadU não é canal oficial."));
     b.appendChild(botaoOuvir(o.titulo + ". " + o.resposta));
     CadU.contar("assunto", o.categoria);
