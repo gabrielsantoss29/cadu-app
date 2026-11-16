@@ -27,7 +27,7 @@ from base_conhecimento import BaseConhecimento  # noqa: E402
 
 CAMINHO_BASE = os.environ.get("CADU_BASE", str(RAIZ / "assistente" / "data" / "base_conhecimento.json"))
 CAMINHO_POSTOS = RAIZ / "dados" / "cras_sp.json"
-CAMINHO_ENERGIA = RAIZ / "energia" / "aparelhos_provisorio.json"
+CAMINHO_CONFIG_ENERGIA = RAIZ / "energia" / "config_app.json"
 
 app = Flask(__name__)
 app.config["MAX_CONTENT_LENGTH"] = 4 * 1024   # pedidos de até 4 KB bastam para o chat
@@ -37,7 +37,18 @@ if not base.carregar():
     raise RuntimeError(f"Base de conhecimento com problema: {base.erro}")
 # Sem caminho_historico: o servidor não grava o que as pessoas digitam.
 assistente = Assistente("CadU", base)
-energia = json.loads(CAMINHO_ENERGIA.read_text(encoding="utf-8"))
+# Módulo de energia (SERS): aparelhos, hipóteses, fontes e os cálculos vêm de energia/
+sys.path.insert(0, str(RAIZ / "energia"))
+from calculo_energia import calcular_consumo_mensal, carregar_energia, comparar_banho  # noqa: E402
+from integracao_cadu import responder_energia  # noqa: E402
+
+energia_sers = carregar_energia()
+energia = json.loads(CAMINHO_CONFIG_ENERGIA.read_text(encoding="utf-8"))
+energia["aparelhos"] = [dict(a, icone=energia["icones"].get(a["id"], "🔌")) for a in energia_sers["aparelhos"]]
+energia["comparacao"] = energia_sers["comparacao_exemplo"]
+energia["orientacoes"] = energia_sers["orientacoes"]
+energia["referencias"] = energia_sers["referencias"]
+energia["data_verificacao"] = energia_sers["data_verificacao"]
 postos = json.loads(CAMINHO_POSTOS.read_text(encoding="utf-8"))
 
 # Abas do menu: (endereço, nome, ícone, chave da aba)
@@ -169,6 +180,36 @@ def api_contar():
 def api_contadores():
     """Totais anônimos (só números). Vazio quando não há banco ligado."""
     return jsonify(ativo=contadores.ativo(), totais=contadores.totais())
+
+
+def _numero(dados, campo, minimo, maximo, padrao=None):
+    """Lê um número do JSON do pedido. Devolve None se estiver fora da faixa."""
+    v = dados.get(campo, padrao)
+    if isinstance(v, bool) or not isinstance(v, (int, float)) or not (minimo <= v <= maximo):
+        return None
+    return float(v)
+
+
+@app.post("/api/energia/comparar")
+def api_energia_comparar():
+    """Compara banho mais curto e aquecimento solar (módulo SERS). Não guarda nada."""
+    d = request.get_json(silent=True)
+    if not isinstance(d, dict):
+        return jsonify(erro="Envie os números do chuveiro."), 400
+    c = energia["comparacao"]
+    potencia = _numero(d, "potencia_w", 0, 20000, c["chuveiro_potencia_w"])
+    minutos = _numero(d, "minutos_dia", 1, 1440, round(c["horas_banho_total_dia_base"] * 60))
+    minutos_novo = _numero(d, "minutos_dia_reduzido", 0, 1440, round(c["horas_banho_total_dia_reduzido"] * 60))
+    dias = _numero(d, "dias_mes", 1, 31, c["dias_mes"])
+    solar = _numero(d, "fracao_solar", 0, 1, c["fracao_substituida_solar"])
+    tarifa = _numero(d, "tarifa_kwh", 0, 10) if d.get("tarifa_kwh") is not None else None
+    if None in (potencia, minutos, minutos_novo, dias, solar) or (d.get("tarifa_kwh") is not None and tarifa is None):
+        return jsonify(erro="Confira os números: algum está fora do possível."), 400
+    try:
+        r = comparar_banho(potencia, minutos / 60, minutos_novo / 60, int(dias), solar, tarifa_r_kwh=tarifa)
+    except ValueError as e:
+        return jsonify(erro=str(e)), 400
+    return jsonify(r)
 
 
 @app.get("/api/saude")

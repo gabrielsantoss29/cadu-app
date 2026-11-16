@@ -2,7 +2,7 @@
 {% block titulo %}Benefícios{% endblock %}
 {% block conteudo %}
 <h1 class="flex items-center gap-3 text-3xl font-extrabold">{{ icone('presente', 'h-8 w-8 text-cadu') }} Benefícios</h1>
-<p class="mt-2 mb-4">Toque em um cartão para ver o passo a passo.</p>
+<p class="mt-2 mb-4">Toque em um benefício para ver o passo a passo.</p>
 
 <!-- Atalhos para as categorias -->
 <nav class="mb-6 flex gap-2 overflow-x-auto pb-2" aria-label="Categorias">
@@ -27,7 +27,6 @@
               {% endif %}
             </div>
             <h3 class="text-xl font-bold">{{ o.titulo }}</h3>
-            <p class="mt-1 text-slate-700 line-clamp-2">{{ o.resposta }}</p>
           </div>
           {{ icone('seta-direita', 'mt-1 h-7 w-7 text-cadu') }}
         </summary>
@@ -51,10 +50,6 @@
           <button data-ouvir="#ben-{{ o.id }}" class="min-h-toque inline-flex items-center gap-2 rounded-xl bg-cadu px-4 py-2 font-semibold text-white hover:bg-cadu-escuro">{{ icone('ouvir') }} Ouvir</button>
           <a href="/cadu?abrir={{ o.codigo }}" class="min-h-toque inline-flex items-center gap-2 rounded-xl bg-cadu-claro px-4 py-2 font-semibold text-cadu-escuro">{{ icone('conversa') }} Perguntar ao CadU</a>
         </div>
-        <p class="px-5 pb-5 text-base text-slate-600">
-          Fonte: <a class="inline-flex min-h-toque items-center underline text-cadu" href="{{ o.fonte }}" target="_blank" rel="noopener noreferrer">{{ o.fonte_nome or o.fonte }}</a>
-          · conferido em {{ o.verificado_em }}{% if not o.conferido_por_humano %} · <em>em conferência</em>{% endif %}
-        </p>
       </details>
     </article>
     {% endfor %}

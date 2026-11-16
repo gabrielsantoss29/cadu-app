@@ -1,0 +1,117 @@
+{
+  "projeto": "Cadu - Modulo Energia / SERS",
+  "versao": "1.0",
+  "data_verificacao": "2026-11-12",
+  "aviso": "Simulacoes educativas. Nao constituem medicao, previsao garantida da fatura ou analise de elegibilidade a beneficios.",
+  "referencias": [
+    {
+      "id": "procel",
+      "nome": "Eletrobras / Procel - tabela historica de consumo de aparelhos",
+      "url": "https://sistemas.eel.usp.br/docentes/arquivos/5840834/59/tabelasconsumo.pdf",
+      "nota": "Referencia historica, nao substitui etiqueta ou manual do aparelho existente. Valores abaixo sao cenarios ilustrativos."
+    },
+    {
+      "id": "epe",
+      "nome": "EPE - dados abertos de consumo mensal de energia eletrica",
+      "url": "https://www.epe.gov.br/pt/publicacoes-dados-abertos/dados-abertos/dados-do-consumo-mensal-de-energia-eletrica",
+      "nota": "Dados agregados regionais nao representam uma familia especifica."
+    },
+    {
+      "id": "solar_mme",
+      "nome": "ProjetEEE / MME - Sistemas de aquecimento solar de agua",
+      "url": "https://projeteee.mme.gov.br/equipamento/equipamentos-solares-sistema-de-aquecimento-solar-de-agua/",
+      "nota": "Componentes, instalacao e condicoes de funcionamento do sistema."
+    },
+    {
+      "id": "solar_artigo",
+      "nome": "Altoe et al. (2012) - Analise energetica de sistemas solares termicos",
+      "url": "https://doi.org/10.1590/S1678-86212012000300006",
+      "nota": "Resultado de estudo especifico; nao representa desempenho garantido em qualquer residencia."
+    }
+  ],
+  "aparelhos": [
+    {
+      "id": "chuveiro",
+      "nome": "Chuveiro eletrico",
+      "potencia_w": 5500,
+      "horas_por_dia": 0.3333333333,
+      "dias_por_mes": 30,
+      "quantidade": 1,
+      "tipo_dado": "cenario_ilustrativo",
+      "fonte": "procel",
+      "observacao": "20 minutos diarios somados na residencia; potencia depende da regulagem."
+    },
+    {
+      "id": "lampada",
+      "nome": "Lampada LED",
+      "potencia_w": 9,
+      "horas_por_dia": 5,
+      "dias_por_mes": 30,
+      "quantidade": 4,
+      "tipo_dado": "cenario_ilustrativo",
+      "fonte": "procel",
+      "observacao": "Potencia e quantidade devem ser editadas conforme as lampadas reais."
+    },
+    {
+      "id": "televisao",
+      "nome": "Televisao",
+      "potencia_w": 100,
+      "horas_por_dia": 4,
+      "dias_por_mes": 30,
+      "quantidade": 1,
+      "tipo_dado": "cenario_ilustrativo",
+      "fonte": "procel",
+      "observacao": "Potencia nominal de exemplo; conferir etiqueta."
+    },
+    {
+      "id": "ventilador",
+      "nome": "Ventilador",
+      "potencia_w": 65,
+      "horas_por_dia": 8,
+      "dias_por_mes": 30,
+      "quantidade": 1,
+      "tipo_dado": "cenario_ilustrativo",
+      "fonte": "procel",
+      "observacao": "Cenario de uso, nao media oficial."
+    }
+  ],
+  "necessidade_comparada": "Fornecer agua quente para banho com menor consumo de eletricidade",
+  "comparacao_exemplo": {
+    "chuveiro_potencia_w": 5500,
+    "horas_banho_total_dia_base": 0.3333333333,
+    "horas_banho_total_dia_reduzido": 0.1666666667,
+    "dias_mes": 30,
+    "fracao_substituida_solar": 0.7,
+    "tipo_dado": "hipoteses_de_cenario_nao_medidas",
+    "nota": "Solar termico exige area, insolacao, instalacao e manutencao; fracao solar de 70% e hipotese demonstrativa, nao rendimento assegurado. Tarifa e investimento devem vir da fatura e de orcamentos reais. Estudo publicado encontrou media de 70% para cenarios de uma residencia em Vicosa/MG, mas aqui o percentual continua hipotese demonstrativa."
+  },
+  "orientacoes": [
+    {
+      "id": "banho_curto",
+      "titulo": "Banhos mais curtos podem economizar energia",
+      "mensagem_simples": "Se voce usa chuveiro eletrico, reduzir o tempo de banho pode baixar o consumo. Digite a potencia e os minutos reais para simular.",
+      "alternativa": "Reducao do tempo de uso do chuveiro eletrico",
+      "renovavel": false,
+      "custo_implantacao": "Sem aquisicao de equipamento na simulacao; depende do comportamento das pessoas.",
+      "impacto_ambiental": "Menor demanda de eletricidade, em condicoes comparaveis.",
+      "limites": "Economia depende de potencia, regulagem e tempo efetivo; nao e garantida.",
+      "fontes": [
+        "procel"
+      ]
+    },
+    {
+      "id": "solar_termico",
+      "titulo": "Aquecimento solar de agua pode reduzir o uso do chuveiro eletrico",
+      "mensagem_simples": "Coletores solares usam o calor do sol para aquecer agua. E preciso verificar se o imovel permite instalacao e pedir orcamento.",
+      "alternativa": "Sistema solar termico para agua do banho",
+      "renovavel": true,
+      "custo_implantacao": "Investimento inicial, instalacao e manutencao: solicitar cotacao local.",
+      "impacto_ambiental": "Pode diminuir eletricidade demandada para aquecer agua; resultados dependem da operacao e do clima.",
+      "limites": "Requer area apropriada, insolacao, infraestrutura hidraulica e, em muitos casos, apoio eletrico.",
+      "fontes": [
+        "solar_mme",
+        "solar_artigo"
+      ]
+    }
+  ]
+}

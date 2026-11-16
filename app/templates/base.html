@@ -55,12 +55,6 @@
   {% endblock %}
 
   <main class="{% block largura_main %}px-4 py-6 pb-40{% endblock %}">
-    {% if base_rascunho and aba not in ('cadu', 'triagem') %}
-    <p class="mb-5 flex items-start gap-2 rounded-xl border border-cadu-amarelo bg-amber-50 p-3 text-base">
-      {{ icone('alerta', 'h-6 w-6 text-amber-600') }}
-      <span>As informações ainda estão em <strong>conferência</strong> pela equipe. Confira sempre na fonte oficial.</span>
-    </p>
-    {% endif %}
     {% block conteudo %}{% endblock %}
   </main>
   </div>
@@ -82,7 +76,7 @@
   <nav class="fixed bottom-0 left-1/2 z-20 grid w-full max-w-[430px] -translate-x-1/2 grid-cols-5 border-t border-cadu-claro bg-white" aria-label="Menu">
     {% for url, nome, ic, chave in abas %}
     <a href="{{ url }}" {% if chave == aba %}aria-current="page"{% endif %}
-       class="flex min-h-[64px] flex-col items-center justify-center gap-0.5 text-base font-semibold
+       class="flex min-h-[64px] flex-col items-center justify-center gap-0.5 px-0.5 text-[15px] font-semibold tracking-tight
        {{ 'text-cadu bg-cadu-claro' if chave == aba else 'text-slate-600' }}">
       {{ icone(ic, 'h-7 w-7') }}<span>{{ nome }}</span>
     </a>

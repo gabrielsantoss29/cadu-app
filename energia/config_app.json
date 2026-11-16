@@ -1,0 +1,30 @@
+{
+  "aviso": "Configuração da tela de Energia do app. Aparelhos, hipóteses e fontes vêm de energia.json (módulo SERS).",
+  "tarifa_kwh_padrao": 0.85,
+  "limite_kwh": 80,
+  "limite_explicacao": "Limite de comparação (provisório). Pode ser mudado aqui.",
+  "icones": {
+    "chuveiro": "🚿",
+    "lampada": "💡",
+    "televisao": "📺",
+    "ventilador": "🌀"
+  },
+  "dicas": [
+    "Banho mais curto e chuveiro na posição verão gastam menos.",
+    "Não deixe a porta da geladeira aberta e mantenha a geladeira longe do fogão.",
+    "Junte roupa para passar tudo de uma vez.",
+    "Desligue a TV e a luz quando sair do cômodo.",
+    "Troque lâmpadas antigas por LED.",
+    "Tire da tomada o carregador que não está sendo usado."
+  ],
+  "media_regional": {
+    "fonte": "EPE, Dados Abertos do Consumo Mensal de Energia Elétrica, classe residencial cativa, média de 2023 a 2025 (relatório estatístico da equipe)",
+    "kwh_por_mes": {
+      "Norte": 213.08,
+      "Nordeste": 134.06,
+      "Centro-Oeste": 211.14,
+      "Sudeste": 182.48,
+      "Sul": 208.2
+    }
+  }
+}

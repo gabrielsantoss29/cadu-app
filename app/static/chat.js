@@ -91,9 +91,6 @@
     }
     fonte.append(" · conferido em " + o.verificado_em);
     b.appendChild(fonte);
-    if (!o.conferido_por_humano) {
-      b.appendChild(el("p", "mt-1 text-base text-amber-700", "Informação ainda em conferência pela equipe."));
-    }
     b.appendChild(el("p", "mt-1 text-base text-slate-600", "O CadU não é canal oficial."));
     b.appendChild(botaoOuvir(o.titulo + ". " + o.resposta));
     CadU.contar("assunto", o.categoria);

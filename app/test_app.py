@@ -85,6 +85,17 @@ class TestApp(unittest.TestCase):
         html = self.c.get("/mapa").get_data(as_text=True)
         self.assertIn("CRAS", html)
 
+    def test_energia_compara_banho_pelo_modulo_sers(self):
+        r = self.c.post("/api/energia/comparar", json={}).get_json()
+        self.assertAlmostEqual(r["cenario_base"]["consumo_estimado_kwh_mes"], 55, places=1)
+        self.assertAlmostEqual(r["alternativa_1_banho_mais_curto"]["consumo_estimado_kwh_mes"], 27.5, places=1)
+        self.assertAlmostEqual(r["alternativa_2_aquecimento_solar_termico"]["consumo_estimado_kwh_mes"], 16.5, places=1)
+        self.assertNotIn("economia_estimativa_r_mes", r["alternativa_1_banho_mais_curto"])  # sem tarifa, sem reais
+
+    def test_energia_recusa_numero_impossivel(self):
+        for corpo in ({"potencia_w": -5}, {"fracao_solar": 1.5}, {"minutos_dia": "abc"}, {"minutos_dia": 10, "minutos_dia_reduzido": 30}):
+            self.assertEqual(self.c.post("/api/energia/comparar", json=corpo).status_code, 400)
+
 
 if __name__ == "__main__":
     unittest.main()

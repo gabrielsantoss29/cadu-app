@@ -20,28 +20,9 @@
 </section>
 
 <section class="mt-5 rounded-2xl border border-cadu-claro bg-white p-5">
-  <h2 class="flex items-center gap-2 text-2xl font-bold">{{ icone('cadeado', 'h-7 w-7 text-cadu') }} Seus dados</h2>
-  <p class="mt-2">Suas respostas das perguntinhas ficam <strong>só neste aparelho</strong>. A conversa não é guardada. Nunca pedimos nome, CPF nem renda.</p>
-  <div class="mt-4 flex flex-wrap gap-3">
-    <button id="apagar-dados" class="min-h-toque inline-flex items-center gap-2 rounded-xl bg-red-700 px-5 py-3 text-lg font-bold text-white hover:bg-red-800">{{ icone('lixo') }} Apagar meus dados</button>
-    <a href="/triagem" class="min-h-toque inline-flex items-center gap-2 rounded-xl bg-cadu-claro px-5 py-3 text-lg font-bold text-cadu-escuro">{{ icone('refazer') }} Refazer perguntinhas</a>
-  </div>
-  <p id="apagou" class="mt-3 font-semibold text-green-700" hidden>Pronto, apaguei tudo deste aparelho.</p>
-</section>
-
-<section class="mt-5 rounded-2xl border border-cadu-claro bg-white p-5">
   <h2 class="text-2xl font-bold">Sobre o CadU</h2>
   <p class="mt-2">O CadU é um projeto de estudantes, gratuito. <strong>Não é canal oficial</strong> do governo.
     O app oficial consulta e informa; o CadU <strong>acompanha</strong>: explica em palavras simples, lê em voz alta e mostra o passo a passo quando dá problema.</p>
   <p class="mt-2">O assistente funciona por regras: só responde com o que está na nossa base, sempre com a fonte oficial e a data. Quando não sabe, diz que não sabe.</p>
 </section>
-{% endblock %}
-{% block scripts %}
-<script>
-  document.getElementById("apagar-dados").addEventListener("click", function () {
-    if (!confirm("Apagar tudo o que o CadU guardou neste aparelho?")) return;
-    CadU.apagarDados();
-    document.getElementById("apagou").hidden = false;
-  });
-</script>
 {% endblock %}

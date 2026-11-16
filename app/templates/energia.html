@@ -3,9 +3,7 @@
 {% block conteudo %}
 <h1 class="flex items-center gap-3 text-3xl font-extrabold">{{ icone('raio', 'h-8 w-8 text-cadu') }} Conta de luz</h1>
 <p class="mt-2">Marque os aparelhos da sua casa e quantas horas por dia ficam ligados. Eu calculo quanto gasta por mês.</p>
-{% if energia.provisorio %}
-<p class="mt-3 rounded-xl bg-amber-50 p-3 text-base"><strong>Valores provisórios</strong> (média aproximada). A conta real depende do aparelho e da sua distribuidora.</p>
-{% endif %}
+<p class="mt-3 rounded-xl bg-amber-50 p-3 text-base">É uma <strong>estimativa</strong>, não a sua conta. Confira a potência na etiqueta do aparelho.</p>
 
 <section class="mt-5 rounded-2xl border border-cadu-claro bg-white p-4">
   <label for="tarifa" class="block text-lg font-bold">Preço do kWh (R$)</label>
@@ -37,10 +35,10 @@
     </label>
     <div class="mt-3 flex flex-wrap items-center gap-4 text-lg">
       <label class="flex items-center gap-2">Quantos:
-        <input type="number" class="qtd min-h-toque w-20 rounded-xl border-2 border-cadu-claro px-3 text-xl" min="1" max="20" value="1" inputmode="numeric">
+        <input type="number" class="qtd min-h-toque w-20 rounded-xl border-2 border-cadu-claro px-3 text-xl" min="1" max="20" value="{{ a.quantidade }}" inputmode="numeric">
       </label>
       <label class="flex items-center gap-2">Horas por dia:
-        <input type="number" class="horas min-h-toque w-24 rounded-xl border-2 border-cadu-claro px-3 text-xl" min="0" max="24" step="0.1" value="{{ a.horas_padrao }}" inputmode="decimal">
+        <input type="number" class="horas min-h-toque w-24 rounded-xl border-2 border-cadu-claro px-3 text-xl" min="0" max="24" step="0.1" value="{{ a.horas_por_dia | round(2) }}" inputmode="decimal">
       </label>
     </div>
   </div>
@@ -61,6 +59,32 @@
 </section>
 
 <section class="mt-6 rounded-2xl border border-cadu-claro bg-white p-5">
+  <h2 class="text-2xl font-bold">Banho: curto ou aquecedor solar?</h2>
+  <p class="mt-1 text-base text-slate-600">Compare duas formas de gastar menos energia com o chuveiro elétrico. É uma simulação.</p>
+  <div class="mt-3 grid gap-3 text-lg">
+    <label class="flex items-center justify-between gap-3">Potência do chuveiro (W)
+      <input id="b-potencia" type="number" min="1" max="20000" value="{{ energia.comparacao.chuveiro_potencia_w }}" inputmode="numeric" class="min-h-toque w-28 rounded-xl border-2 border-cadu-claro px-3 text-xl"></label>
+    <label class="flex items-center justify-between gap-3">Minutos de banho por dia (todos juntos)
+      <input id="b-minutos" type="number" min="1" max="1440" value="{{ (energia.comparacao.horas_banho_total_dia_base * 60) | round | int }}" inputmode="numeric" class="min-h-toque w-24 rounded-xl border-2 border-cadu-claro px-3 text-xl"></label>
+    <label class="flex items-center justify-between gap-3">Se encurtar para (minutos)
+      <input id="b-novo" type="number" min="0" max="1440" value="{{ (energia.comparacao.horas_banho_total_dia_reduzido * 60) | round | int }}" inputmode="numeric" class="min-h-toque w-24 rounded-xl border-2 border-cadu-claro px-3 text-xl"></label>
+    <label class="flex items-center justify-between gap-3">Solar substitui quantos % (suposição)
+      <input id="b-solar" type="number" min="0" max="100" value="{{ (energia.comparacao.fracao_substituida_solar * 100) | round | int }}" inputmode="numeric" class="min-h-toque w-24 rounded-xl border-2 border-cadu-claro px-3 text-xl"></label>
+  </div>
+  <button id="b-calcular" type="button" class="mt-4 min-h-toque rounded-xl bg-cadu px-5 py-3 text-lg font-bold text-white">Comparar</button>
+  <p id="b-erro" class="mt-3 font-semibold text-red-700" role="alert" hidden></p>
+  <div id="b-resultado" class="mt-4 space-y-2 text-lg" aria-live="polite" hidden>
+    <p><strong>Hoje:</strong> <span id="b-base"></span> kWh por mês.</p>
+    <p><strong>Banho mais curto:</strong> <span id="b-curto"></span> kWh por mês (economiza <span id="b-ec-curto"></span> kWh).</p>
+    <p><strong>Aquecedor solar:</strong> <span id="b-sol"></span> kWh por mês de apoio elétrico (economiza <span id="b-ec-sol"></span> kWh).</p>
+    <p class="rounded-xl bg-amber-50 p-3 text-base">Banho curto muda o tempo do banho. O solar exige instalação, sol e orçamento, e os {{ (energia.comparacao.fracao_substituida_solar * 100) | round | int }}% são uma suposição, não uma promessa. Não inclui impostos nem bandeiras.</p>
+  </div>
+  <p class="mt-3 text-sm text-slate-500">Fontes:
+    {% for r in energia.referencias %}<a class="underline" href="{{ r.url }}" target="_blank" rel="noopener noreferrer">{{ r.nome }}</a>{{ "; " if not loop.last }}{% endfor %}
+    (conferido em {{ energia.data_verificacao }}).</p>
+</section>
+
+<section class="mt-6 rounded-2xl border border-cadu-claro bg-white p-5">
   <h2 class="text-2xl font-bold">Dicas para economizar</h2>
   <ul id="dicas" class="mt-2 ml-6 list-disc space-y-1">
     {% for d in energia.dicas %}<li>{{ d }}</li>{% endfor %}
@@ -74,7 +98,7 @@
 {% endblock %}
 {% block scripts %}
 <script>
-  // Limite de comparação vem de energia/aparelhos_provisorio.json (constante configurável).
+  // Limite de comparação vem de energia/config_app.json (constante configurável).
   const LIMITE_KWH = {{ energia.limite_kwh | tojson }};
 </script>
 <script src="{{ url_for('static', filename='energia.js') }}"></script>

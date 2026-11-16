@@ -59,4 +59,31 @@
   document.addEventListener("input", calcular);
   document.addEventListener("change", calcular);
   calcular();
+
+  // Comparação banho curto x solar: o cálculo é feito pelo módulo SERS no servidor (energia/calculo_energia.py)
+  const $bErro = document.getElementById("b-erro");
+  document.getElementById("b-calcular").addEventListener("click", async function () {
+    $bErro.hidden = true;
+    const corpo = {
+      potencia_w: Number(document.getElementById("b-potencia").value),
+      minutos_dia: Number(document.getElementById("b-minutos").value),
+      minutos_dia_reduzido: Number(document.getElementById("b-novo").value),
+      fracao_solar: Number(document.getElementById("b-solar").value) / 100,
+      tarifa_kwh: numero($tarifa, 0, 10) > 0 ? numero($tarifa, 0, 10) : null,
+    };
+    try {
+      const resp = await fetch("/api/energia/comparar", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify(corpo) });
+      const r = await resp.json();
+      if (!resp.ok) { $bErro.textContent = r.erro || "Confira os números."; $bErro.hidden = false; return; }
+      const f = v => String(Math.round(v * 10) / 10).replace(".", ",");
+      document.getElementById("b-base").textContent = f(r.cenario_base.consumo_estimado_kwh_mes);
+      document.getElementById("b-curto").textContent = f(r.alternativa_1_banho_mais_curto.consumo_estimado_kwh_mes);
+      document.getElementById("b-ec-curto").textContent = f(r.alternativa_1_banho_mais_curto.economia_estimada_kwh_mes);
+      document.getElementById("b-sol").textContent = f(r.alternativa_2_aquecimento_solar_termico.consumo_estimado_kwh_mes);
+      document.getElementById("b-ec-sol").textContent = f(r.alternativa_2_aquecimento_solar_termico.economia_estimada_kwh_mes);
+      document.getElementById("b-resultado").hidden = false;
+    } catch (e) {
+      $bErro.textContent = "Sem conexão agora. Tente de novo."; $bErro.hidden = false;
+    }
+  });
 })();
