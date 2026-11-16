@@ -6,12 +6,12 @@ Prazo no Portal: 19/11, 23h59. Meta do grupo: fechar tudo até 17/11.
 
 1. Entre em https://console.neon.tech, abra o projeto `my-first-project` e clique no botão verde **Connect** (esquerda).
 2. Copie a *connection string* (começa com `postgresql://`). Ela é uma senha: não mande no chat, não coloque em arquivo do repositório.
-3. No app do Claude, abra o painel **Terminal** e a aba que ficou aberta (chamada "vercel login"). Ela está parada numa pergunta do comando `vercel env add DATABASE_URL`.
+3. Abra um terminal na pasta do projeto. Se a aba do assistente ainda estiver aberta, ela está parada numa pergunta do comando `vercel env add DATABASE_URL`.
    - Escolha **Secret** (Enter).
    - Cole a connection string quando pedir o valor (Enter).
    - Escolha o ambiente **Production** (espaço para marcar, Enter).
    - Se a aba sumiu: abra um terminal na pasta do projeto e rode `& 'C:\Users\gabri\AppData\Roaming\npm\vercel.cmd' env add DATABASE_URL production`.
-4. Avise o Claude para republicar o app (ou rode `& 'C:\Users\gabri\AppData\Roaming\npm\vercel.cmd' deploy --prod --yes`).
+4. Republique o app (rode `& 'C:\Users\gabri\AppData\Roaming\npm\vercel.cmd' deploy --prod --yes`).
 5. Para conferir: abra https://cadu-app.vercel.app/api/contadores. Depois de usar o app, deve aparecer `"ativo": true` e os números.
 
 Os contadores guardam só números (triagens feitas, assuntos consultados, "ajudou" e "não ajudou"). Nunca guardam texto digitado nem IP.
