@@ -27,3 +27,6 @@ Plano_*.docx
 
 # Vercel
 .vercel/
+
+# Cópias para anexar no Portal (uso interno)
+entregaveis/
