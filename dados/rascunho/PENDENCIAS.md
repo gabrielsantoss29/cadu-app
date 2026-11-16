@@ -1,3 +1,5 @@
+> Gabriel conferiu os links desta lista nas páginas oficiais em 16/11/2026 e confirmou as fichas.
+
 # Pendências da base do CadU (rascunho de 09/11/2026)
 
 Nada aqui foi conferido por humano. Abra cada link, confira o que está escrito e depois mude `conferido_por_humano` para `true` na ficha.

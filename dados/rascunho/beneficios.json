@@ -33,7 +33,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/cadastro-unico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "A página diz que o Cadastro é porta de entrada para mais de 40 programas federais, estaduais e municipais; não usar esse número no app sem conferir."
     },
     {
@@ -61,7 +61,7 @@
       "fonte_url": "https://www.gov.br/pt-br/servicos/inscrever-se-no-cadastro-unico-para-programas-sociais-do-governo-federal",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "A notícia oficial sobre o novo sistema diz que a atualização NÃO pode ser feita pelo celular e deve ser no CRAS/posto; a página do serviço cita a versão web do app. Conferir qual vale. Materiais antigos (folder 2015) pedem menos documentos; usar só a lista atual."
     },
     {
@@ -89,7 +89,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/noticias-e-conteudos/Noticias/2025/tire-suas-duvidas-sobre-o-novo-cadastro-unico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Prazo de 24 meses também confirmado em gov.br/mds/pt-br/acoes-e-programas/cadastro-unico. Página de serviço do gov.br cita 'versão Web do aplicativo' para confirmar dados, o que parece conflitar com 'não é possível pelo celular'."
     },
     {
@@ -116,7 +116,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/cadastro-unico/perguntas-frequentes-cadastro-unico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "As cores estão nas Perguntas Frequentes (início da página), não na página app-cadunico (que não cita cores). A leitura da página foi feita por resumo automático; conferir o trecho original."
     },
     {
@@ -144,7 +144,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/cadastro-unico/paginas/app-cadunico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "A página app-cadunico lista só 5 funções (comprovante, integrantes/NIS, se está atualizado, achar posto, informes) e não lista o que o app NÃO faz. 'Não faz cadastro novo nem atualização' vem da notícia do novo sistema e das Perguntas Frequentes. A página cita dois endereços (cadunico.cidadania.gov.br e cadunico.dataprev.gov.br): conferir qual é o oficial."
     },
     {
@@ -172,7 +172,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/cadastro-unico/perguntas-frequentes-cadastro-unico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "A consulta por CPF e data de nascimento está descrita no trecho inicial das Perguntas Frequentes."
     },
     {
@@ -200,7 +200,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/cadastro-unico/perguntas-frequentes-cadastro-unico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Os prazos e públicos detalhados na página são das ações de 2023 e são para gestores municipais; não usei datas. Conferir se há ação nova vigente em 2026."
     },
     {
@@ -227,7 +227,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/cadastro-unico/perguntas-frequentes-cadastro-unico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Se mais de uma pessoa da casa tem cadastro sozinha, a página manda escolher uma (quem recebe Bolsa Família) para manter. Quem divide a casa mas não divide renda e gastos não precisa cancelar. Recomendo o app avisar a pessoa a procurar o CRAS antes de cancelar."
     },
     {
@@ -254,7 +254,7 @@
       "fonte_url": "https://www.gov.br/pt-br/servicos/receber-o-bolsa-familia",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Não achei página oficial do MDS que defina o CRAS em uma frase. O nome por extenso e o papel no cadastro vêm dos serviços gov.br. Para a explicação do nome ('Centro de Referência de Assistência Social'), conferir em página do MDS sobre SUAS. Para São Paulo capital, não consegui confirmar página da prefeitura: ver PENDENCIAS."
     },
     {
@@ -282,7 +282,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/bolsa-familia",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Horário (seg-sex 7h-19h humano; eletrônico 24h) lido na página do Bolsa Família. Gratuidade de celular e fixo lida em gov.br/pt-br/servicos/receber-o-bolsa-familia. A notícia do MDS diz que pelo 121 dá para 'informar ou atualizar o cadastro por telefone', mas a mesma fonte diz que atualizar exige ir ao CRAS: tratar como conflito e não prometer atualização por telefone."
     },
     {
@@ -311,7 +311,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/noticias-e-conteudos/Noticias/2025/tire-suas-duvidas-sobre-o-novo-cadastro-unico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "A página 'app-cadunico' não traz aviso de golpe. A orientação vem desta notícia de 2025: conferir se segue atual."
     },
     {
@@ -339,7 +339,7 @@
       "fonte_url": "https://www.gov.br/pt-br/servicos/receber-o-bolsa-familia",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Limite de R$ 218 por pessoa confirmado na página oficial de serviço gov.br (a mesma renda que o app oficial mostra). Os percentuais de frequência escolar vêm da página gov.br/mds/.../bolsa-familia. Conferir se o limite mudou depois do reajuste do salário mínimo."
     },
     {
@@ -366,7 +366,7 @@
       "fonte_url": "https://www.gov.br/pt-br/servicos/receber-o-bolsa-familia",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Conflito: esta página diz Primeira Infância para criança 'de 0 a 7 anos incompletos'; busca anterior citava 0 a 6 anos. Usei a página oficial. Conferir se os valores mudaram em 2026."
     },
     {
@@ -421,7 +421,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/cadastro-unico/perguntas-frequentes-cadastro-unico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Prazos vêm da FAQ e são das ações de 2023 (ex.: bloqueio por 3 meses antes do cancelamento no caso unipessoal). Busca citou bloqueio de até 6 meses antes do cancelamento (fonte municipal). Conflito: NÃO afirmar prazo exato no app. Condicionalidades: servem para CRAS/CREAS apoiar a família."
     },
     {
@@ -448,7 +448,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/bolsa-familia/original/informes/2026/informe_bolsa_familia_n_104.pdf",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Regra geral (últimos 10 dias úteis, dezembro até dia 23) vem de resultado de busca citando MDS; não li o PDF. MDS divulgou em 2026 calendário unificado de out-dez por causa do El Niño. As datas de novembro (16/11 final 1, 17/11 final 2, 18/11 finais 3 a 0) e dezembro só vi em site de prefeitura (Maracanaú): NÃO publicar sem conferir na notícia do MDS. Não coloquei datas nos campos."
     },
     {
@@ -476,7 +476,7 @@
       "fonte_url": "https://www.gov.br/mec/pt-br/acesso-a-informacao/perguntas-frequentes/pe-de-meia/sou-estudante-do-ensino-medio",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "A página do MEC me bloqueou (verificação anti-robô); os dados vêm de resultados de busca sobre páginas do MEC. Valores citados: regular até 10 parcelas de R$ 200 (1 matrícula + 9 frequência) + R$ 1.000 por série concluída (saque só após formatura) + R$ 200 Enem; EJA R$ 225 até 4 parcelas por semestre. CONFLITOS: (1) data de corte do CadÚnico: 'até 7 de agosto de 2026' (busca MEC) vs 'até 7 de fevereiro' (outra busca); (2) EJA: R$ 225 'por mês' vs 'quatro por semestre'; (3) total 'até R$ 9.200' não bate com as parcelas; (4) regra de 'duas reprovações seguidas retiram do programa' só em um resultado. Portaria 169/2026 não foi lida. Não escrevi valores no resumo para evitar erro."
     },
     {
@@ -503,7 +503,7 @@
       "fonte_url": "https://www.gov.br/capes/pt-br/assuntos/noticias/publicado-edital-do-pe-de-meia-licenciaturas-2026",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Edital nº 2/2026. A página diz que o cadastro começa em 17/02/2026; MEC e Secom noticiaram retificação e abertura em 20/02/2026 e primeira chamada até 20/03/2026; chamadas mensais até dez/2026. Conflito de datas: conferir o texto do edital. Hoje (09/11/2026) a primeira chamada já passou e não confirmei se há chamada aberta nem edital de 2027. A página lida NÃO cita exigência de CadÚnico/renda: não afirmar. Até 12 mil bolsas segundo busca."
     },
     {
@@ -531,7 +531,7 @@
       "fonte_url": "https://www.gov.br/aneel/pt-br/assuntos/tarifas/tarifa-social",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Regra vigente: 100% de desconto até 80 kWh, 0% acima, para faturas emitidas a partir de 05/07/2025 (MP 1.300/2025, convertida na Lei 15.235/2025), segundo ANEEL. A regra antiga em faixas (65%, 40%, 10%) deixou de valer. Uma página da Secom sobre Luz do Povo fala em descontos progressivos acima de 80 kWh: parece desatualizada, conflita com a ANEEL. Quilombolas e indígenas tinham regra própria na regra antiga; não confirmei a regra atual para eles."
     },
     {
@@ -557,7 +557,7 @@
       "fonte_url": "https://www.gov.br/aneel/pt-br/assuntos/noticias/2025/agencia-regula-a-politica-publica-do-luz-do-povo-estabelecida-pela-lei-no-15-235-2025",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "A notícia da ANEEL não informa o percentual do desconto, só 'tarifa reduzida' e isenção de quotas da CDE, consumo até 120 kWh, início em 01/01/2026, cerca de 4,1 milhões de famílias. A página 'Tarifa Social' fala de uma única faixa (80 kWh) e não cita o Desconto Social. Não confirmei se está funcionando nem o percentual: NÃO inventar. Buscar a Resolução Normativa da ANEEL."
     },
     {
@@ -585,7 +585,7 @@
       "fonte_url": "https://www.gov.br/inss/pt-br/direitos-e-deveres/beneficios-assistenciais/beneficio-assistencial-a-pessoa-idosa-bpc-loas",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "A leitura cobriu os primeiros 100 mil de 143 mil caracteres da página (revisão e encerramento podem estar no resto). Não escrevi o valor em reais do 1/4. Busca citou regra recente de proteção para variação de renda (MDS/INSS): conferir antes de usar."
     },
     {
@@ -612,7 +612,7 @@
       "fonte_url": "https://www.gov.br/inss/pt-br/direitos-e-deveres/beneficios-assistenciais/beneficio-assistencial-a-pessoa-com-deficiencia-bpc-loas",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Página do INSS lida (primeiros 100 mil de 145 mil caracteres). Revisão periódica e fim do benefício não apareceram no trecho lido."
     },
     {
@@ -640,7 +640,7 @@
       "fonte_url": "https://www.gov.br/mds/pt-br/acoes-e-programas/gas-do-povo",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Vales liberados todo dia 10, segundo a página. A página não diz a validade do vale: resultado de busca citou 3 meses ou 2 meses; não usei. Busca citou 'até 3 botijões' para 2 pessoas em nota do RJ e '4 por ano' em FAQ: diverge; usei só a página do MDS. A revenda pode cobrar entrega ou botijão vazio (FAQ Caixa, via busca)."
     },
     {
@@ -666,7 +666,7 @@
       "fonte_url": "https://www.gov.br/pt-br/servicos/adquirir-carteira-do-idoso",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Página de serviço lida. Diz 60 anos ou mais. Garante duas vagas grátis por veículo ou pelo menos 50% de desconto na passagem interestadual. Prazo total do serviço: até 120 dias. Uma fonte municipal diz que quem já tem comprovante de renda formal não precisa da carteira: não está na página lida, não usar."
     },
     {
@@ -693,7 +693,7 @@
       "fonte_url": "https://www.gov.br/pt-br/servicos/obter-a-carteira-de-identidade-jovem",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Página de serviço lida: validade de 365 dias (uma notícia de 2021 dizia seis meses; vale a página de serviço). Também dá isenção da taxa da Carteira de Identidade Estudantil. Emissão online pede conta gov.br."
     },
     {
@@ -719,7 +719,7 @@
       "fonte_url": "http://www.planalto.gov.br/ccivil_03/_ato2007-2010/2008/decreto/d6593.htm",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Só vi o resumo de busca, não abri o decreto. Um material do MDS diz que 'baixa renda' é até meio salário mínimo por pessoa ou até 3 salários mínimos de renda familiar: conferir. Um edital de 2026 citou o Decreto 11.016 (que substituiu regras do Cadastro): checar se o 6.593 ainda é a base."
     },
     {
@@ -746,7 +746,7 @@
       "fonte_url": "https://www.gov.br/cidades/pt-br/acesso-a-informacao/acoes-e-programas/habitacao/programa-minha-casa-minha-vida",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Provavelmente é o programa de moradia que aparece com ícone de casa no app oficial (não consegui ver a tela). A página do Ministério das Cidades, lida hoje, diz que o cadastro da Faixa 1 é só pela prefeitura (ou entidade organizadora), que é proibido cobrar taxa de cadastro ou de prioridade, e que cobrança deve ser denunciada ao Ministério Público. Essa página NÃO fala do Cadastro Único nem das faixas de renda. A exigência do Cadastro Único veio de resultado de busca, e a página do Cadastro Único cita o programa entre os que usam o cadastro. Renda: R$ 2.850 (prefeituras) vs R$ 3.200 (Salvador). Não usar valor."
     },
     {
@@ -773,7 +773,7 @@
       "fonte_url": "https://www.gov.br/pt-br/servicos/obter-passe-livre-interestadual-digital",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Base legal citada: Lei 8.899/1994. A credencial mostra 'ACOMPANHANTE: Sim' quando o médico registra essa necessidade. A página fala em 'transporte coletivo interestadual'; 'ônibus, trem ou barco' no resumo é interpretação minha: conferir. Este Passe Livre é diferente da Carteira da Pessoa Idosa e da ID Jovem."
     },
     {
@@ -800,7 +800,7 @@
       "fonte_url": "https://www.gov.br/mulheres/pt-br/central-de-conteudos/noticias/2026/defeso-eleitoral/cnh-social-saiba-como-acessar-o-programa-que-preve-gratuidade-na-habilitacao-para-pessoas-de-baixa-renda",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Lei 15.153/2025 permite que estados usem dinheiro de multas para pagar a formação de motoristas de baixa renda. O que é pago: exames médico e psicológico, aulas teóricas e práticas, taxas das provas (incluindo um reteste) e emissão da carteira. O Detran-PE alerta que não existe direito automático nacional: depende do edital de cada estado. 'Ninguém pode cobrar pela inscrição' veio de aviso do Detran-ES (via busca): conferir. Para São Paulo, conferir o site do Detran-SP (não pesquisei)."
     },
     {
@@ -827,7 +827,7 @@
       "fonte_url": "https://www.gov.br/ana/pt-br/assuntos/saneamento-basico/tarifa-social-de-agua-e-esgoto/perguntas-frequentes",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Quem tem direito, concessão automática e documentos: lidos na página da ANA. Lei 14.898/2024. O desconto de 50% na primeira faixa de consumo até 15 m³ NÃO está na página da ANA lida; veio de resultado de busca (notícia do Planalto e projeto de lei municipal). Não usei no resumo. Prazo: segundo a ANA (Norma de Referência 13/2025), as empresas têm até 11/12/2026 para se adequar à lei, então em novembro de 2026 a regra pode ainda não estar valendo em todo lugar. Tarifas sociais locais antigas continuam valendo. Para São Paulo, conferir a regra da Sabesp/Arsesp."
     },
     {
@@ -854,7 +854,7 @@
       "fonte_url": "https://www.gov.br/cidadania/pt-br/acoes-e-programas/assistencia-social/servicos-e-programas-1/convivencia-e-fortalecimento-de-vinculos",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Ficha curta. Vi só resultado de busca da página federal, que parece antiga (endereço gov.br/cidadania). Faixas de idade citadas: até 6, 6 a 15, 15 a 17, 18 a 29, 30 a 59 anos e idosos. Conferir página atual do MDS."
     },
     {
@@ -908,7 +908,7 @@
       "fonte_url": "https://www.gov.br/inss/pt-br/noticias/contribuinte-facultativo-de-baixa-renda",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Ficha curta. Requisitos, 5% e lista de benefícios lidos na notícia do INSS. 'As contribuições não valem se não cumprir as regras' e a inscrição pelo Meu INSS/135 vieram de outras notícias do INSS via busca. Códigos de pagamento (1929 mensal, 1937 trimestral) só em busca: conferir. Não escrevi valor em reais. Cada benefício tem carência (ex.: salário-maternidade, 10 contribuições)."
     },
     {
@@ -935,7 +935,7 @@
       "fonte_url": "https://www.gov.br/pt-br/servicos/obter-isencao-de-pagamento-de-taxas-sobre-imovel-da-uniao",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Ficha curta. Vi só resultado de busca. Base: Decreto-Lei 1.876/1981. Busca citou renda familiar de até 5 salários mínimos como alternativa ao Cadastro Único, prazo de até 90 dias e validade de 4 anos (ano do pedido mais 3); fontes divergem. Não usei números. 'Terreno de marinha' no resumo é exemplo meu: conferir."
     },
     {
@@ -961,7 +961,7 @@
       "fonte_url": "https://www.gov.br/planalto/pt-br/acompanhe-o-planalto/noticias/2024/02/fies-social-financia-ate-100-de-encargos-para-estudantes-de-familias-do-cadunico",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Ficha curta. Só resultado de busca (notícia de 2024 e editais). Reserva de 50% das vagas para o Fies Social; Resolução 58/2024. Regras gerais do Fies (média 450 no Enem, redação diferente de zero, renda até 3 salários mínimos por pessoa) e calendário 2026 não foram lidos na fonte: conferir no edital."
     },
     {
@@ -987,7 +987,7 @@
       "fonte_url": "https://www.gov.br/fnde/pt-br/acesso-a-informacao/acoes-e-programas/programas/pnae",
       "verificado_em": "2026-11-09",
       "status_verificacao": "parcial",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Ficha curta. Só resultado de busca. Lei 11.947/2009. Não ficou claro como o PNAE usa o Cadastro Único (o app oficial lista o programa). Conferir."
     },
     {
@@ -1013,7 +1013,7 @@
       "fonte_url": "https://www.gov.br/saude/pt-br/campanhas-da-saude/2024/dignidade-menstrual/como-retirar-absorventes-gratuitos",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Página lida. Ela diz 'renda mensal de até R$ 218' sem explicar se é por pessoa; o Bolsa Família usa R$ 218 por pessoa. Conferir. Ajuda em CRAS/CREAS/Centro POP vem da página da Farmácia Popular. Uma prefeitura cita meio salário mínimo para estudantes; não usei."
     },
     {
@@ -1040,7 +1040,7 @@
       "fonte_url": "https://www.gov.br/saude/pt-br/composicao/sectics/farmacia-popular",
       "verificado_em": "2026-11-09",
       "status_verificacao": "verificado",
-      "conferido_por_humano": false,
+      "conferido_por_humano": true,
       "observacoes": "Página lida: diz que remédios e insumos são grátis e lista 12 indicações. A página NÃO fala de regra especial para o Bolsa Família. Notícias oficiais de 2023 a 2025 diziam que quem recebe Bolsa Família pegava todos os itens de graça; depois a gratuidade foi ampliada. Não afirmar regra do Bolsa Família sem conferir."
     }
   ]
