@@ -39,5 +39,5 @@ O cálculo usa potência, tempo e dias de uso; não requer dados pessoais. Valor
 
 ## Equipe (conferir grafia antes de submeter)
 - Guilherme Henrique Garbelini Alberto — RM 571150
-- Hebert Soares de Jesus — RM 571507
+- Herbert Soares de Jesus — RM 571507
 - Gabriel de Almeida Santos — RM 569395

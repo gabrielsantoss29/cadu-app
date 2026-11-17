@@ -20,7 +20,7 @@ Cada pasta de entrega terá um README próprio explicando como executar.
 
 Pasta `energia/`. Faz parte do assistente CadU (aba **Energia** do app).
 
-**Integrantes:** Gabriel de Almeida Santos (RM 569395), Guilherme Henrique Garbelini Alberto (RM 571150), Hebert Soares de Jesus (RM 571507).
+**Integrantes:** Gabriel de Almeida Santos (RM 569395), Guilherme Henrique Garbelini Alberto (RM 571150), Herbert Soares de Jesus (RM 571507).
 
 **Público e problema:** famílias de baixa renda que querem entender o consumo de energia e gastar menos na conta de luz, sem depender de termos técnicos.
 
