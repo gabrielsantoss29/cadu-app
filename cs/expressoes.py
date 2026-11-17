@@ -1,49 +1,74 @@
-"""Aqui o Gabriel coloca a regra dele.
+"""Regra de decisão do módulo de Computer Science (CadU).
 
-Como preencher (só entre os marcadores COMECE/TERMINE):
-  1. NOMES: nomes das variáveis (3 ou 4), na mesma ordem da tabela-verdade.
-  2. PERGUNTAS: a pergunta que o assistente faz para cada variável,
-     dizendo o que significa 1 e o que significa 0.
-  3. original: a regra original (por exemplo, a forma canônica).
-  4. simplificada: a expressão simplificada.
-     Use `and`, `or`, `not`. Cada argumento vale 0 ou 1.
-  5. ORIENTACAO: o texto mostrado ao cidadão quando a saída é 1 e quando é 0.
-  6. FONTES: fontes verificáveis das regras, com data de consulta.
-  7. Mude EXEMPLO para False.
+Situação de atendimento: o assistente orienta a família sobre a ATUALIZAÇÃO DO CADASTRO ÚNICO
+e diz se ela deve procurar o CRAS com prioridade.
 
-Tudo abaixo é só EXEMPLO (não é a regra do trabalho).
+Variáveis (1 = sim, 0 = não), na ordem da tabela-verdade (A é o bit mais significativo):
+  A = já se passaram 24 meses ou mais desde a última atualização do cadastro
+  B = mudou algo na família (endereço, renda ou quem mora na casa)
+  C = a família recebe Bolsa Família
+  D = a família recebeu aviso de convocação (revisão ou averiguação cadastral)
+
+Saída S: 1 = procurar o CRAS com prioridade; 0 = sem urgência agora.
+
+Regra (escolha do grupo, em cima das regras oficiais das fontes):
+  S = 1 quando a família foi convocada (D), ou quando precisa atualizar (A ou B) e recebe
+  Bolsa Família (C), porque o benefício pode ser bloqueado se o cadastro ficar desatualizado.
+
+Forma canônica (produto de maxtermos): S = ΠM(0, 2, 4, 8, 12)
+Expressão simplificada (álgebra e mapa de Karnaugh): S = D + A·C + B·C
 """
 
-EXEMPLO = True  # <-- mude para False quando colocar a sua regra
+EXEMPLO = False
 
 # ===== COMECE A EDITAR AQUI =====
 
-NOMES = ["A", "B", "C"]  # EXEMPLO
+NOMES = ["A", "B", "C", "D"]
 
-PERGUNTAS = {  # EXEMPLO
-    "A": "Exemplo A? (1 = sim, 0 = não)",
-    "B": "Exemplo B? (1 = sim, 0 = não)",
-    "C": "Exemplo C? (1 = sim, 0 = não)",
+PERGUNTAS = {
+    "A": "Já faz 24 meses ou mais que o cadastro foi atualizado? (1 = sim, 0 = não)",
+    "B": "Mudou algo na família: endereço, renda ou quem mora na casa? (1 = sim, 0 = não)",
+    "C": "A família recebe Bolsa Família? (1 = sim, 0 = não)",
+    "D": "Chegou aviso chamando a família para revisão ou averiguação do cadastro? (1 = sim, 0 = não)",
 }
 
 
-def original(a, b, c):
-    # EXEMPLO: troque pela sua regra original/canônica
-    return (a and b) or (a and not b)
+def original(a, b, c, d):
+    """Forma canônica: produto de maxtermos, S = ΠM(0, 2, 4, 8, 12).
+
+    M0  = A + B + C + D        (linha 0000)
+    M2  = A + B + C' + D       (linha 0010)
+    M4  = A + B' + C + D       (linha 0100)
+    M8  = A' + B + C + D       (linha 1000)
+    M12 = A' + B' + C + D      (linha 1100)
+    """
+    return ((a or b or c or d)
+            and (a or b or (not c) or d)
+            and (a or (not b) or c or d)
+            and ((not a) or b or c or d)
+            and ((not a) or (not b) or c or d))
 
 
-def simplificada(a, b, c):
-    # EXEMPLO: troque pela sua expressão simplificada
-    return a
+def simplificada(a, b, c, d):
+    """Expressão simplificada: S = D + A·C + B·C."""
+    return d or (a and c) or (b and c)
 
 
-ORIENTACAO = {  # EXEMPLO
-    1: "Exemplo de orientação quando a saída é 1.",
-    0: "Exemplo de orientação quando a saída é 0.",
+ORIENTACAO = {
+    1: ("Procure o CRAS ou o posto do Cadastro Único o quanto antes para atualizar o cadastro. "
+        "Se chegou aviso, respeite a data-limite dele. Com o cadastro desatualizado, o benefício pode ser bloqueado."),
+    0: ("Sem urgência agora. Mesmo assim, o cadastro precisa ser atualizado a cada 24 meses e sempre que algo "
+        "mudar na família. Anote a data e procure o CRAS quando chegar a hora."),
 }
 
-FONTES = [  # EXEMPLO
-    "Exemplo: nome da fonte, endereço, consultado em DD/MM/AAAA.",
+FONTES = [
+    "Ministério do Desenvolvimento e Assistência Social (MDS), Perguntas frequentes do Cadastro Único, "
+    "https://www.gov.br/mds/pt-br/acoes-e-programas/cadastro-unico/perguntas-frequentes-cadastro-unico, "
+    "consultado em 09/11/2026 e conferido em 16/11/2026.",
+    "MDS, Tire suas dúvidas sobre o novo Cadastro Único (atualização a cada 24 meses ou quando algo mudar; "
+    "Bolsa Família pode ser convocado a partir de 18 meses), "
+    "https://www.gov.br/mds/pt-br/noticias-e-conteudos/Noticias/2025/tire-suas-duvidas-sobre-o-novo-cadastro-unico, "
+    "consultado em 09/11/2026 e conferido em 16/11/2026.",
 ]
 
 # ===== TERMINE DE EDITAR AQUI =====
