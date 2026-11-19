@@ -30,14 +30,13 @@ A opção de banho curto reduz o tempo do serviço, diferente da proposta solar.
 ## Dados e referências
 O cálculo usa potência, tempo e dias de uso; não requer dados pessoais. Valores dos equipamentos são cenários ilustrativos, não medições. O arquivo `energia.json` identifica as fontes técnicas e a base da EPE. Leia a análise completa em `comparacao_alternativas_SERS.md`.
 
-## Evidências de integração e testes ainda necessárias
-1. Com o Gabriel, integrar estas funções ao fluxo do Cadu e testar perguntas completas.
-2. Registrar testes de compreensão e utilidade com pessoas externas, sem dados pessoais.
-3. Documentar correções feitas após comentários e incluir capturas ou transcrição anônima.
-4. Gravar vídeo técnico **não listado** de até **3 minutos** demonstrando os recursos e limitações.
-5. Publicar o conteúdo no GitHub, identificado como contribuição SERS, e enviar ao Portal **apenas um `.txt`** com nomes/RMs e links do repositório e do vídeo.
+## Integração, testes e vídeo
+- As funções deste módulo estão integradas ao app: a aba **Energia** chama `comparar_banho` pela rota `/api/energia/comparar` (`app/app.py`) e calcula o consumo dos aparelhos.
+- Testes automáticos do módulo: `energia/testes_sers.py`.
+- Testes com pessoas de fora, sem dados pessoais, e os ajustes feitos: `energia/registro_testes_usuarios.md`.
+- Vídeo técnico (não listado, até 3 minutos): https://youtu.be/dmoBV2l_Tyg
 
-## Equipe (conferir grafia antes de submeter)
+## Equipe
 - Guilherme Henrique Garbelini Alberto — RM 571150
 - Herbert Soares de Jesus — RM 571507
 - Gabriel de Almeida Santos — RM 569395
